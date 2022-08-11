@@ -1,4 +1,4 @@
-use std::any::{type_name_of_val, Any, TypeId};
+use std::any::{Any, TypeId};
 
 struct TraitcastTarget {
     target_type_id: TypeId,
@@ -26,12 +26,6 @@ fn trait_cast<'a, Target: ?Sized + 'static>(
             .find(|possible| possible.target_type_id == std::any::TypeId::of::<Target>());
         if let Some(target) = target {
             let fn_ptr: fn(&dyn Any) -> Option<&Target> = std::mem::transmute(target.to_dyn_func);
-            println!(
-                "fn_ptr {} {:p}",
-                type_name_of_val(&fn_ptr),
-                fn_ptr as *const ()
-            );
-            println!("source {:p}", source);
             fn_ptr(source)
         } else {
             None
@@ -56,9 +50,6 @@ impl Baup for Foo {
 impl Traitcastable for Foo {
     fn traitcastable_from(&self) -> Vec<TraitcastTarget> {
         unsafe {
-            //   let to_dyn_func: fn(&dyn Traitcastable) -> *const () =
-            //     std::mem::transmute(Self::to_dyn_baup as fn(_) -> _);
-            println!("orig_to_dyn_func {:p}", Self::to_dyn_baup as *const ());
             vec![TraitcastTarget {
                 target_type_id: std::any::TypeId::of::<dyn Baup>(),
                 to_dyn_func: std::mem::transmute(Self::to_dyn_baup as fn(_) -> _),
