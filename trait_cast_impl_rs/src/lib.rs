@@ -30,7 +30,7 @@ impl Parse for Args {
       }
       vars.push(new_trait);
     }
-    Ok(Args { vars })
+    Ok(Self { vars })
   }
 }
 
