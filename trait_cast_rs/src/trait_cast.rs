@@ -1,4 +1,7 @@
-use std::any::{Any, TypeId};
+use core::{
+  any::{Any, TypeId},
+  mem,
+};
 
 pub struct TraitcastTarget {
   target_type_id: TypeId,
@@ -34,10 +37,10 @@ pub fn trait_cast<'a, Target: ?Sized + 'static>(
   let target = source
     .traitcastable_from()
     .iter()
-    .find(|possible| possible.target_type_id == std::any::TypeId::of::<Target>());
+    .find(|possible| possible.target_type_id == TypeId::of::<Target>());
   if let Some(target) = target {
     let fn_ptr: fn(&dyn Traitcastable) -> Option<&Target> =
-      unsafe { std::mem::transmute(target.to_dyn_func) };
+      unsafe { mem::transmute(target.to_dyn_func) };
     fn_ptr(source)
   } else {
     None

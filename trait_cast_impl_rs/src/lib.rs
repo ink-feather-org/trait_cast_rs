@@ -4,7 +4,7 @@ use quote::{format_ident, quote, quote_spanned};
 use syn::parse::{Parse, ParseStream, Result};
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
-use syn::{parse_macro_input, Error, Ident, Item, ItemStruct, Token};
+use syn::{parse_macro_input, Error, Ident, Item, Token};
 
 struct Args {
   vars: Vec<Ident>,

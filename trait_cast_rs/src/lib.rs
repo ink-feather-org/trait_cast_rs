@@ -1,3 +1,4 @@
+#![no_std]
 mod trait_cast;
 pub use trait_cast::*;
 
