@@ -68,7 +68,7 @@ fn gen_target_func(item_name: &Ident, args: &Args) -> TokenStream2 {
     .collect::<TokenStream2>();
   let expanded = quote!(
     impl ::trait_cast_rs::Traitcastable for #item_name {
-      fn traitcastable_from(&self) -> &'static [TraitcastTarget] {
+      fn traitcast_targets(&self) -> &'static [TraitcastTarget] {
         const TARGETS: &'static [TraitcastTarget] = &[ #targets ];
         TARGETS
       }

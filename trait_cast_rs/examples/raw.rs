@@ -46,7 +46,7 @@ impl HybridPet {
   }
 }
 impl Traitcastable for HybridPet {
-  fn traitcastable_from(&self) -> &'static [TraitcastTarget] {
+  fn traitcast_targets(&self) -> &'static [TraitcastTarget] {
     const TARGETS: &'static [TraitcastTarget] = &[
       TraitcastTarget::create(HybridPet::to_dyn_dog),
       TraitcastTarget::create(HybridPet::to_dyn_cat),
