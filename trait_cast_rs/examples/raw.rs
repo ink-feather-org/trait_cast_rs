@@ -35,35 +35,29 @@ trait Cat {
 
 impl HybridPet {
   /// Pass this function pointer to register_downcast
-  pub fn to_dyn_dog(input: &dyn Traitcastable) -> Option<&dyn Dog> {
+  pub fn to_dyn_dog(input: &dyn Traitcastable) -> Option<&(dyn Dog + 'static)> {
     let any: &dyn Any = input;
     any.downcast_ref::<Self>().map(|selv| selv as &dyn Dog)
   }
   /// Pass this function pointer to register_downcast
-  pub fn to_dyn_cat(input: &dyn Traitcastable) -> Option<&dyn Cat> {
+  pub fn to_dyn_cat(input: &dyn Traitcastable) -> Option<&(dyn Cat + 'static)> {
     let any: &dyn Any = input;
     any.downcast_ref::<Self>().map(|selv| selv as &dyn Cat)
   }
 }
 impl Traitcastable for HybridPet {
   fn traitcastable_from(&self) -> &'static [TraitcastTarget] {
-    const TARGETS: &'static [TraitcastTarget] = unsafe {
-      &[
-        TraitcastTarget::new(
-          std::any::TypeId::of::<dyn Dog>(),
-          std::mem::transmute(HybridPet::to_dyn_dog as fn(_) -> _),
-        ),
-        TraitcastTarget::new(
-          std::any::TypeId::of::<dyn Cat>(),
-          std::mem::transmute(HybridPet::to_dyn_cat as fn(_) -> _),
-        ),
-      ]
-    };
+    const TARGETS: &'static [TraitcastTarget] = &[
+      TraitcastTarget::create(HybridPet::to_dyn_dog),
+      TraitcastTarget::create(HybridPet::to_dyn_cat),
+    ];
     TARGETS
   }
 }
 
 fn main() {
+  TraitcastTarget::create::<dyn Dog + 'static>(HybridPet::to_dyn_dog);
+
   // The box is technically not needed but kept for added realism
   let pet = Box::new(HybridPet {
     name: "Kokusnuss".to_string(),

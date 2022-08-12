@@ -8,13 +8,12 @@ pub struct TraitcastTarget {
   to_dyn_func: fn(&dyn Traitcastable) -> *const (),
 }
 impl TraitcastTarget {
-  pub const unsafe fn new(
-    target_type_id: TypeId,
-    to_dyn_func: fn(&dyn Traitcastable) -> *const (),
+  pub const fn create<Target: 'static + ?Sized>(
+    to_dyn_func: fn(&dyn Traitcastable) -> Option<&Target>,
   ) -> Self {
     Self {
-      target_type_id,
-      to_dyn_func,
+      target_type_id: TypeId::of::<Target>(),
+      to_dyn_func: unsafe { mem::transmute(to_dyn_func) },
     }
   }
 }

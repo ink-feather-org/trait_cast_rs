@@ -1,4 +1,6 @@
 #![no_std]
+#![feature(const_type_id)]
+
 mod trait_cast;
 pub use trait_cast::*;
 

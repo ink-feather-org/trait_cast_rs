@@ -5,31 +5,30 @@ use syn::parse::{Parse, ParseStream, Result};
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
 use syn::{parse_macro_input, Error, Ident, Item, Token};
-
 struct Args {
   vars: Vec<Ident>,
 }
 
 impl Parse for Args {
   fn parse(input: ParseStream) -> Result<Self> {
-    let vars = Punctuated::<Ident, Token![,]>::parse_terminated(input)?;
-    let vars = vars.into_iter().collect::<Vec<_>>();
-    for i in 0..vars.len() {
-      let first_trait = &vars[i];
-      for it in 0..i {
-        let second_trait = &vars[it];
-        if first_trait == second_trait {
+    let idents = Punctuated::<Ident, Token![,]>::parse_terminated(input)?;
+    let mut vars: Vec<Ident> = vec![];
+
+    for new_trait in idents {
+      for pervious_trait in &vars {
+        if new_trait == *pervious_trait {
           let mut error = Error::new(
-            second_trait.span(),
-            format!("Trait `{}` used multiple times", second_trait),
+            new_trait.span(),
+            format!("Trait `{}` used multiple times", new_trait),
           );
           error.combine(Error::new(
-            first_trait.span(),
-            format!("Trait `{}` first used here", first_trait),
+            pervious_trait.span(),
+            format!("Trait `{}` first used here", pervious_trait),
           ));
           return Err(error);
         }
       }
+      vars.push(new_trait);
     }
     Ok(Args { vars })
   }
@@ -42,7 +41,7 @@ fn gen_mapping_funcs(item_name: &Ident, args: &Args) -> TokenStream2 {
     .map(|ident| {
       let to_dyn_name = format_ident!("__internal_to_dyn_{ident}");
       quote_spanned!(ident.span() =>
-        pub fn #to_dyn_name(input: &dyn Traitcastable) -> Option<&dyn #ident> {
+        pub fn #to_dyn_name(input: &dyn Traitcastable) -> Option<&(dyn #ident + 'static)> {
           let any: &dyn Any = input;
           any.downcast_ref::<Self>().map(|selv| selv as &dyn #ident)
         }
@@ -63,21 +62,14 @@ fn gen_target_func(item_name: &Ident, args: &Args) -> TokenStream2 {
     .map(|ident| {
       let to_dyn_name = format_ident!("__internal_to_dyn_{ident}");
       quote_spanned!(ident.span() =>
-        TraitcastTarget::new(
-          std::any::TypeId::of::<dyn #ident>(),
-          std::mem::transmute(HybridPet::#to_dyn_name as fn(_) -> _),
-        ),
+        TraitcastTarget::create(#item_name::#to_dyn_name),
       )
     })
     .collect::<TokenStream2>();
   let expanded = quote!(
     impl ::trait_cast_rs::Traitcastable for #item_name {
       fn traitcastable_from(&self) -> &'static [TraitcastTarget] {
-        const TARGETS: &'static [TraitcastTarget] = unsafe {
-          &[
-            #targets
-          ]
-        };
+        const TARGETS: &'static [TraitcastTarget] = &[ #targets ];
         TARGETS
       }
     }
@@ -87,7 +79,9 @@ fn gen_target_func(item_name: &Ident, args: &Args) -> TokenStream2 {
 
 #[proc_macro_attribute]
 pub fn make_trait_castable(args: TokenStream, input: TokenStream) -> TokenStream {
-  // TODO: Invoke macro_rules for hygiene?
+  // Parse the list of variables the user wanted to print.
+  let args = parse_macro_input!(args as Args);
+
   let input = parse_macro_input!(input as Item);
   let item_name = match &input {
     Item::Enum(item_enum) => &item_enum.ident,
@@ -103,20 +97,11 @@ pub fn make_trait_castable(args: TokenStream, input: TokenStream) -> TokenStream
     },
   };
 
-  // Parse the list of variables the user wanted to print.
-  let args = parse_macro_input!(args as Args);
-
-  // Use a syntax tree traversal to transform the function body.
-  // let output = args.fold_item_fn(input);
-
-  // Hand the resulting function body back to the compiler.
-  // TokenStream::from(quote!(#output))
   let mapping_funcs = gen_mapping_funcs(item_name, &args);
   let target_func = gen_target_func(item_name, &args);
-  let output = TokenStream::from(quote!(
+  TokenStream::from(quote!(
     #input
     #mapping_funcs
     #target_func
-  ));
-  output
+  ))
 }
