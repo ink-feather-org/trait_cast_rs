@@ -1,38 +1,43 @@
 use proc_macro::TokenStream;
-use proc_macro2::TokenStream as TokenStream2;
+use proc_macro2::{Ident, TokenStream as TokenStream2, TokenTree};
 use quote::{format_ident, quote, quote_spanned};
-use syn::parse::{Parse, ParseStream, Result};
-use syn::punctuated::Punctuated;
-use syn::spanned::Spanned;
-use syn::{parse_macro_input, Error, Ident, Item, ItemStruct, Token};
+use venial::{parse_declaration, Declaration, Error};
 
 struct Args {
   vars: Vec<Ident>,
 }
 
-impl Parse for Args {
-  fn parse(input: ParseStream) -> Result<Self> {
-    let vars = Punctuated::<Ident, Token![,]>::parse_terminated(input)?;
-    let vars = vars.into_iter().collect::<Vec<_>>();
-    for i in 0..vars.len() {
-      let first_trait = &vars[i];
-      for it in 0..i {
-        let second_trait = &vars[it];
-        if first_trait == second_trait {
-          let mut error = Error::new(
-            second_trait.span(),
-            format!("Trait `{}` used multiple times", second_trait),
-          );
-          error.combine(Error::new(
-            first_trait.span(),
-            format!("Trait `{}` first used here", first_trait),
-          ));
-          return Err(error);
+fn parse_args(args: TokenStream2) -> Result<Args, Error> {
+  // Parse the list of variables the user wanted to print.
+  let mut vars: Vec<Ident> = vec![];
+  let mut ts = args.into_iter();
+  while let Some(tt) = ts.next() {
+    match tt {
+      proc_macro2::TokenTree::Ident(id) => {
+        for old_id in &vars {
+          if old_id == &id {
+            let mut error =
+              Error::new_at_span(id.span(), format!("Trait `{}` used multiple times", id));
+            error.combine(Error::new_at_span(
+              old_id.span(),
+              format!("Trait `{}` first used here", old_id),
+            ));
+            return Err(error);
+          }
         }
-      }
+        vars.push(id);
+        let next_tt = ts.next();
+        if let Some(tt) = next_tt {
+          match tt {
+            TokenTree::Punct(punc) if punc.as_char() == ',' => {},
+            _ => return Err(Error::new_at_tokens(tt, "Expected ',' or ')' ")),
+          }
+        }
+      },
+      _ => return Err(Error::new_at_tokens(tt, "Expected Identifier")),
     }
-    Ok(Args { vars })
   }
+  Ok(Args { vars })
 }
 
 fn gen_mapping_funcs(item_name: &Ident, args: &Args) -> TokenStream2 {
@@ -56,6 +61,7 @@ fn gen_mapping_funcs(item_name: &Ident, args: &Args) -> TokenStream2 {
   );
   expanded
 }
+
 fn gen_target_func(item_name: &Ident, args: &Args) -> TokenStream2 {
   let targets = args
     .vars
@@ -87,32 +93,31 @@ fn gen_target_func(item_name: &Ident, args: &Args) -> TokenStream2 {
 
 #[proc_macro_attribute]
 pub fn make_trait_castable(args: TokenStream, input: TokenStream) -> TokenStream {
-  // TODO: Invoke macro_rules for hygiene?
-  let input = parse_macro_input!(input as Item);
-  let item_name = match &input {
-    Item::Enum(item_enum) => &item_enum.ident,
-    Item::Struct(item_struct) => &item_struct.ident,
-    _ => {
-      return TokenStream::from(
-        Error::new(
-          input.span(),
-          "The `make_trait_castable` attribute can only be applied to enums or structs",
-        )
-        .to_compile_error(),
-      )
+  let args = match parse_args(args.into()) {
+    Ok(args) => args,
+    Err(err) => return err.to_compile_error().into(),
+  };
+
+  let input = match parse_declaration(input.into()) {
+    Ok(Declaration::Function(fun)) => {
+      let mut error =
+        Error::new_at_span(fun.name.span(), "Can not implement Traitcast for functions");
+      error.combine(Error::new_at_span(
+        fun.name.span(),
+        "Expected Struct, Enum or Union",
+      ));
+      return error.to_compile_error().into();
+    },
+    Ok(input) => input,
+    Err(error) => {
+      return error.to_compile_error().into();
     },
   };
 
-  // Parse the list of variables the user wanted to print.
-  let args = parse_macro_input!(args as Args);
+  let item_name = input.name();
 
-  // Use a syntax tree traversal to transform the function body.
-  // let output = args.fold_item_fn(input);
-
-  // Hand the resulting function body back to the compiler.
-  // TokenStream::from(quote!(#output))
-  let mapping_funcs = gen_mapping_funcs(item_name, &args);
-  let target_func = gen_target_func(item_name, &args);
+  let mapping_funcs = gen_mapping_funcs(&item_name, &args);
+  let target_func = gen_target_func(&item_name, &args);
   let output = TokenStream::from(quote!(
     #input
     #mapping_funcs

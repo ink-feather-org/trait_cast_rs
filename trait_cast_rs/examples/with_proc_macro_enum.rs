@@ -12,24 +12,21 @@ enum HybridPet {
 }
 impl HybridPet {
   fn greet(&self) {
-    if let Self::Name(name) = self {
-      println!("{}: Hi", name)
-    }
+    let Self::Name(name) = self;
+    println!("{}: Hi", name)
   }
 }
 
 impl Dog for HybridPet {
   fn bark(&self) {
-    if let Self::Name(name) = self {
-      println!("{}: Woof!", name)
-    }
+    let Self::Name(name) = self;
+    println!("{}: Woof!", name)
   }
 }
 impl Cat for HybridPet {
   fn meow(&self) {
-    if let Self::Name(name) = self {
-      println!("{}: Meow!", name)
-    }
+    let Self::Name(name) = self;
+    println!("{}: Meow!", name)
   }
 }
 
