@@ -1,14 +1,10 @@
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
-use quote::{format_ident, quote, quote_spanned, ToTokens};
-use std::collections::HashSet as Set;
-use syn::fold::{self, Fold};
+use quote::{format_ident, quote, quote_spanned};
 use syn::parse::{Parse, ParseStream, Result};
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
-use syn::{
-  parse_macro_input, parse_quote, Error, Expr, Ident, ItemFn, ItemStruct, Local, Pat, Stmt, Token,
-};
+use syn::{parse_macro_input, Error, Ident, Item, ItemStruct, Token};
 
 struct Args {
   vars: Vec<Ident>,
@@ -39,7 +35,7 @@ impl Parse for Args {
   }
 }
 
-fn gen_mapping_funcs(struct_name: &Ident, args: &Args) -> TokenStream2 {
+fn gen_mapping_funcs(item_name: &Ident, args: &Args) -> TokenStream2 {
   let to_dyn_funcs = args
     .vars
     .iter()
@@ -54,13 +50,13 @@ fn gen_mapping_funcs(struct_name: &Ident, args: &Args) -> TokenStream2 {
     })
     .collect::<TokenStream2>();
   let expanded = quote!(
-    impl #struct_name {
+    impl #item_name {
       #to_dyn_funcs
     }
   );
   expanded
 }
-fn gen_target_func(struct_name: &Ident, args: &Args) -> TokenStream2 {
+fn gen_target_func(item_name: &Ident, args: &Args) -> TokenStream2 {
   let targets = args
     .vars
     .iter()
@@ -75,7 +71,7 @@ fn gen_target_func(struct_name: &Ident, args: &Args) -> TokenStream2 {
     })
     .collect::<TokenStream2>();
   let expanded = quote!(
-    impl ::trait_cast_rs::Traitcastable for #struct_name {
+    impl ::trait_cast_rs::Traitcastable for #item_name {
       fn traitcastable_from(&self) -> &'static [TraitcastTarget] {
         const TARGETS: &'static [TraitcastTarget] = unsafe {
           &[
@@ -91,10 +87,21 @@ fn gen_target_func(struct_name: &Ident, args: &Args) -> TokenStream2 {
 
 #[proc_macro_attribute]
 pub fn make_trait_castable(args: TokenStream, input: TokenStream) -> TokenStream {
-  // TODO: for enums?
   // TODO: Invoke macro_rules for hygiene?
-  let input = parse_macro_input!(input as ItemStruct);
-  let struct_name = &input.ident;
+  let input = parse_macro_input!(input as Item);
+  let item_name = match &input {
+    Item::Enum(item_enum) => &item_enum.ident,
+    Item::Struct(item_struct) => &item_struct.ident,
+    _ => {
+      return TokenStream::from(
+        Error::new(
+          input.span(),
+          "The `make_trait_castable` attribute can only be applied to enums or structs",
+        )
+        .to_compile_error(),
+      )
+    },
+  };
 
   // Parse the list of variables the user wanted to print.
   let args = parse_macro_input!(args as Args);
@@ -104,8 +111,8 @@ pub fn make_trait_castable(args: TokenStream, input: TokenStream) -> TokenStream
 
   // Hand the resulting function body back to the compiler.
   // TokenStream::from(quote!(#output))
-  let mapping_funcs = gen_mapping_funcs(struct_name, &args);
-  let target_func = gen_target_func(struct_name, &args);
+  let mapping_funcs = gen_mapping_funcs(item_name, &args);
+  let target_func = gen_target_func(item_name, &args);
   let output = TokenStream::from(quote!(
     #input
     #mapping_funcs

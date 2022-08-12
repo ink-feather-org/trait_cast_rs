@@ -7,23 +7,29 @@ use trait_cast_rs::{make_trait_castable, trait_cast, TraitcastTarget, Traitcasta
 extern crate trait_cast_rs;
 
 #[make_trait_castable(Dog, Cat)]
-struct HybridPet {
-  name: String,
+enum HybridPet {
+  Name(String),
 }
 impl HybridPet {
   fn greet(&self) {
-    println!("{}: Hi", self.name)
+    if let Self::Name(name) = self {
+      println!("{}: Hi", name)
+    }
   }
 }
 
 impl Dog for HybridPet {
   fn bark(&self) {
-    println!("{}: Woof!", self.name);
+    if let Self::Name(name) = self {
+      println!("{}: Woof!", name)
+    }
   }
 }
 impl Cat for HybridPet {
   fn meow(&self) {
-    println!("{}: Meow!", self.name);
+    if let Self::Name(name) = self {
+      println!("{}: Meow!", name)
+    }
   }
 }
 
@@ -36,9 +42,7 @@ trait Cat {
 
 fn main() {
   // The box is technically not needed but kept for added realism
-  let pet = Box::new(HybridPet {
-    name: "Kokusnuss".to_string(),
-  });
+  let pet = Box::new(HybridPet::Name("Kokusnuss".to_string()));
   pet.greet();
 
   let castable_pet: Box<dyn Traitcastable> = pet;
