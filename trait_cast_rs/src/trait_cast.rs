@@ -34,10 +34,37 @@ pub trait Traitcastable: Any {
     Any::type_id(self)
   }
 }
+pub trait TraitcastTo<Target: ?Sized> {
+  /// Returns true if `Target` is the exact same type as Self
+  fn is(&self) -> bool;
+
+  /// Returns true if Self can be converted to a Target
+  fn can_be(&self) -> bool;
+
+  fn downcast_ref(&self) -> Option<&Target>;
+  #[cfg(feature = "downcast_unchecked")]
+  #[doc(cfg(feature = "downcast_unchecked"))]
+  fn downcast_ref_unchecked(&self) -> &Target;
+
+  fn downcast_mut(&mut self) -> Option<&mut Target>;
+  #[cfg(feature = "downcast_unchecked")]
+  #[doc(cfg(feature = "downcast_unchecked"))]
+  fn downcast_mut_unchecked(&self) -> &mut Target;
+
+  /// # Errors
+  /// In case of the cast being impossible the input is passed back.
+  /// Otherwise the box would be dropped.
+  #[cfg(feature = "alloc")]
+  #[doc(cfg(feature = "alloc"))]
+  fn downcast(self: Box<Self>) -> Result<Box<Target>, Box<Self>>;
+  #[all(feature = "alloc", feature = "downcast_unchecked")]
+  #[cfg(all(feature = "alloc", feature = "downcast_unchecked"))]
+  fn downcast_unchecked(self: Box<Self>) -> Box<Target>;
+}
 
 macro_rules! implement_with_markers {
   ($($(+)? $traits:ident)*) => {
-    impl Debug for dyn Traitcastable + $($traits +)* {
+    impl Debug for dyn Traitcastable $(+ $traits)* {
       fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "Traitcastable to {{")?;
         for (i, target) in self.traitcast_targets().iter().enumerate() {
@@ -49,46 +76,22 @@ macro_rules! implement_with_markers {
         write!(f, "}}")
       }
     }
-    impl dyn Traitcastable + $($traits +)* {
-      pub fn is<T: Any $(+ $traits)*>(&self) -> bool {
-        <dyn Any>::is::<T>(self)
-      }
-      pub fn downcast_ref<T: Any $(+ $traits)*>(&self) -> Option<&T> {
-        <dyn Any>::downcast_ref::<T>(self)
-      }
-      pub fn downcast_mut<T: Any $(+ $traits)*>(&mut self) -> Option<&mut T> {
-        <dyn Any>::downcast_mut::<T>(self)
-      }
-      #[cfg(feature = "downcast_unchecked")]
-      pub unsafe fn downcast_ref_unchecked<T: Any $(+ $traits)*>(&self) -> &T {
-        <dyn Any>::downcast_ref_unchecked::<T>(self)
-      }
-      #[cfg(feature = "downcast_unchecked")]
-      pub unsafe fn downcast_mut_unchecked<T: Any $(+ $traits)*>(&mut self) -> &mut T {
-        <dyn Any>::downcast_mut_unchecked::<T>(self)
-      }
-
-      #[cfg(feature = "alloc")]
-      pub fn downcast<T: Any $(+ $traits)*>(self: Box<Self>) -> Result<Box<T>, Box<Self>> {
-
-        #[cfg(feature = "downcast_unchecked")]
-        if self.is::<T>() { unsafe { Ok(self.downcast_unchecked::<T>()) } } else { Err(self) }
-        #[cfg(not(feature = "downcast_unchecked"))]
-        if self.is::<T>() { Ok(self.downcast::<T>().unwrap()) } else { Err(self) }
-      }
-      #[cfg(all(feature = "alloc", feature = "downcast_unchecked"))]
-      pub unsafe fn downcast_unchecked<T: Any $(+ $traits)*>(self: Box<Self>) -> Box<T> {
-        <Box<dyn Any>>::downcast_unchecked(self)
-      }
-    }
-    impl dyn Traitcastable + $($traits +)* {
+    impl dyn Traitcastable $(+ $traits)* {
       fn get_trait_cast_target<Target: ?Sized + 'static + $($traits +)*>(&self) -> Option<&'static TraitcastTarget> {
         self
         .traitcast_targets()
         .iter()
         .find(|possible| possible.target_type_id == TypeId::of::<Target>())
       }
-      pub fn trait_cast_ref<Target: ?Sized + 'static + $($traits +)*>(&self) -> Option<&Target> {
+    }
+    impl<Target: ?Sized + 'static + $($traits +)*> TraitcastTo<Target> for dyn Traitcastable $(+ $traits)* {
+      default fn is(&self) -> bool {
+        false
+      }
+      default fn can_be(&self) -> bool {
+        self.get_trait_cast_target::<Target>().is_some()
+      }
+      default fn downcast_ref(&self) -> Option<&Target> {
         self.get_trait_cast_target::<Target>()
           .and_then(|target| {
             let fn_ptr: fn(&dyn Traitcastable) -> Option<&Target> =
@@ -96,8 +99,12 @@ macro_rules! implement_with_markers {
             fn_ptr(self)
           })
       }
+      #[cfg(feature = "downcast_unchecked")]
+      default fn downcast_ref_unchecked(&self) -> &Target {
+        self.downcast_ref().unwrap()
+      }
 
-      pub fn trait_cast_mut<Target: ?Sized + 'static + $($traits +)*>(&mut self) -> Option<&mut Target> {
+      default fn downcast_mut(&mut self) -> Option<&mut Target> {
         self.get_trait_cast_target::<Target>()
           .and_then(|target| {
             let fn_ptr: fn(&mut dyn Traitcastable) -> Option<&mut Target> =
@@ -105,13 +112,58 @@ macro_rules! implement_with_markers {
             fn_ptr(self)
           })
       }
+      #[cfg(feature = "downcast_unchecked")]
+      default fn downcast_mut_unchecked(&self) -> &mut Target {
+        self.downcast_mut().unwrap()
+      }
 
       #[cfg(feature = "alloc")]
-      pub fn trait_cast<Target: ?Sized + 'static + $($traits +)*>(self: Box<Self>) -> Result<Box<Target>, Box<Self>> {
+      default fn downcast(self: Box<Self>) -> Result<Box<Target>, Box<Self>> {
         let raw: *mut Self = Box::into_raw(self) ;
         let raw_ref: &mut Self = unsafe {&mut* raw} ;
-        let to_ref: *mut Target = &mut *raw_ref.trait_cast_mut::<Target>().ok_or(unsafe {Box::from_raw(raw)})?;
+        let to_ref: *mut Target = &mut *raw_ref.downcast_mut().ok_or(unsafe {Box::from_raw(raw)})?;
         Ok(unsafe { Box::from_raw(to_ref) })
+      }
+
+      #[cfg(all(feature = "alloc", feature = "downcast_unchecked"))]
+      default fn downcast_unchecked(self: Box<Self>) -> Box<Target> {
+        self.downcast().unwrap()
+      }
+    }
+    impl<Target: Sized + 'static + $($traits +)*> TraitcastTo<Target> for dyn Traitcastable $(+ $traits)* {
+      fn is(&self) -> bool {
+        <dyn Any>::is::<Target>(self)
+      }
+      fn can_be(&self) -> bool {
+        <dyn Traitcastable as TraitcastTo<Target>>::is(self)
+      }
+      fn downcast_ref(&self) -> Option<&Target> {
+        <dyn Any>::downcast_ref::<Target>(self)
+      }
+      #[cfg(feature = "downcast_unchecked")]
+      fn downcast_ref_unchecked(&self) -> &Target {
+        <dyn Any>::downcast_ref::<Target>(self)
+      }
+
+      fn downcast_mut(&mut self) -> Option<&mut Target> {
+        <dyn Any>::downcast_mut::<Target>(self)
+      }
+      #[cfg(feature = "downcast_unchecked")]
+      fn downcast_mut_unchecked(&self) -> &mut Target {
+        <dyn Any>::downcast_mut_unchecked::<Target>(self)
+      }
+
+      #[cfg(feature = "alloc")]
+      fn downcast(self: Box<Self>) -> Result<Box<Target>, Box<Self>> {
+        #[cfg(feature = "downcast_unchecked")]
+        if TraitcastTo::<Target>::is(self.as_ref()) { unsafe { Ok(<Box<dyn Any>>::downcast_unchecked(self)) } } else { Err(self) }
+        #[cfg(not(feature = "downcast_unchecked"))]
+        if TraitcastTo::<Target>::is(self.as_ref()) { Ok(<Box<dyn Any>>::downcast(self).unwrap()) } else { Err(self) }
+      }
+
+      #[cfg(all(feature = "alloc", feature = "downcast_unchecked"))]
+      fn downcast_unchecked(self: Box<Self>) -> Box<Target> {
+        <Box<dyn Any>>::downcast_unchecked::<Target>(self)
       }
     }
   };
@@ -120,10 +172,3 @@ macro_rules! implement_with_markers {
 implement_with_markers!();
 implement_with_markers!(Send);
 implement_with_markers!(Send + Sync);
-// Maybe support this once min_specialization is supported.
-// pub fn trait_cast<'a, Target: Sized + 'static>(
-//   source: &'a dyn Any,
-//   trait_cast_target: &[TraitcastTarget],
-// ) -> Option<&'a Target> {
-//   source.downcast_ref::<Target>()
-// }

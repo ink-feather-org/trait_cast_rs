@@ -2,7 +2,7 @@
 #![allow(incomplete_features)]
 use std::any::Any;
 
-use trait_cast_rs::{make_trait_castable, TraitcastTarget, Traitcastable};
+use trait_cast_rs::{make_trait_castable, TraitcastTarget, TraitcastTo, Traitcastable};
 
 extern crate trait_cast_rs;
 
@@ -36,9 +36,9 @@ fn main() {
 
   let mut castable_pet: Box<dyn Traitcastable> = pet;
 
-  let as_dog = castable_pet.trait_cast_mut::<dyn Dog>().unwrap();
+  let as_dog: &mut dyn Dog = castable_pet.downcast_mut().unwrap();
   as_dog.rename("Rommel".to_string());
 
-  let cast_back = castable_pet.downcast_ref::<HybridPet>().unwrap();
+  let cast_back: &HybridPet = castable_pet.downcast_ref().unwrap();
   cast_back.greet();
 }

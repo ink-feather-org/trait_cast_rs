@@ -2,7 +2,7 @@
 #![allow(incomplete_features)]
 use std::any::{type_name, Any};
 
-use trait_cast_rs::{make_trait_castable, TraitcastTarget, Traitcastable};
+use trait_cast_rs::{make_trait_castable, TraitcastTarget, TraitcastTo, Traitcastable};
 
 extern crate trait_cast_rs;
 
@@ -43,18 +43,15 @@ fn main() {
 
   let castable_pet: Box<dyn Traitcastable> = pet;
 
-  let as_dog = castable_pet.trait_cast_ref::<dyn Dog<i32>>().unwrap();
+  let as_dog: &dyn Dog<i32> = castable_pet.downcast_ref().unwrap();
   as_dog.bark();
 
-  let as_dog = castable_pet
-    .trait_cast_ref::<dyn Dog<TestStruct<i32>>>()
-    .unwrap();
+  let as_dog: &dyn Dog<TestStruct<i32>> = castable_pet.downcast_ref().unwrap();
   as_dog.bark();
 
-  let as_cat = castable_pet.trait_cast_ref::<dyn Cat<u128, u32>>().unwrap();
+  let as_cat: &dyn Cat<u128, u32> = castable_pet.downcast_ref().unwrap();
   as_cat.meow();
 
-  let any_pet = castable_pet as Box<dyn Any>;
-  let cast_back: &HybridPet = any_pet.downcast_ref().unwrap();
+  let cast_back: &HybridPet = castable_pet.downcast_ref().unwrap();
   cast_back.greet();
 }

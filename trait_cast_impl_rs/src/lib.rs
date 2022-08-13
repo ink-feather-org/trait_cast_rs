@@ -20,8 +20,8 @@ impl Type {
   fn is_some_punct(tt: Option<&TokenTree>, c: char) -> bool {
     if let Some(TokenTree::Punct(p)) = tt && p.as_char() == c {true} else {false}
   }
-  fn expect_punct(tt: TokenTree, c: char) -> Result<(), Error> {
-    Self::is_punct(&tt, c)
+  fn expect_punct(tt: &TokenTree, c: char) -> Result<(), Error> {
+    Self::is_punct(tt, c)
       .then_some(())
       .ok_or_else(|| Error::new_at_tokens(&tt, format!("Expected '{}' but found: '{}'", c, tt)))
   }
@@ -30,7 +30,7 @@ impl Type {
       let last = input.next();
       let next = input.next();
       if let Some(next) = next {
-        Self::expect_punct(next, ':')?;
+        Self::expect_punct(&next, ':')?;
         Ok(true)
       } else {
         Err(Error::new_at_tokens(last, "Expected ':' but got to end"))
@@ -40,23 +40,24 @@ impl Type {
     }
   }
   fn as_ident(input: Option<TokenTree>) -> Result<Ident, Error> {
-    if let Some(input) = input {
-      if let TokenTree::Ident(i) = input {
-        Ok(i)
-      } else {
-        Err(Error::new_at_tokens(
-          &input,
-          format!("Expected Identifier but found: '{}'", input),
-        ))
-      }
-    } else {
-      Err(Error::new("Expected Identifier"))
-    }
+    input.map_or_else(
+      || Err(Error::new("Expected Identifier")),
+      |input| {
+        if let TokenTree::Ident(i) = input {
+          Ok(i)
+        } else {
+          Err(Error::new_at_tokens(
+            &input,
+            format!("Expected Identifier but found: '{}'", input),
+          ))
+        }
+      },
+    )
   }
-  fn parse(mut input: &mut Peekable<impl Iterator<Item = TokenTree>>) -> Result<Type, Error> {
-    let fully_qualified = Self::take_path_sep(&mut input)?;
+  fn parse(input: &mut Peekable<impl Iterator<Item = TokenTree>>) -> Result<Self, Error> {
+    let fully_qualified = Self::take_path_sep(input)?;
 
-    let mut ty = Type {
+    let mut ty = Self {
       fully_qualified,
       path: vec![Self::as_ident(input.next())?],
       generics: vec![],
@@ -81,7 +82,7 @@ impl Type {
       } else if Self::is_punct(tt, ',') {
         input.next();
         break;
-      } else if Self::take_path_sep(&mut input)? {
+      } else if Self::take_path_sep(input)? {
         ty.path.push(Self::as_ident(input.next())?);
       } else {
         return Err(err_msg);
@@ -89,24 +90,22 @@ impl Type {
     }
     Ok(ty)
   }
-  fn parse_vec(mut input: Peekable<impl Iterator<Item = TokenTree>>) -> Result<Vec<Type>, Error> {
+  fn parse_vec(mut input: Peekable<impl Iterator<Item = TokenTree>>) -> Result<Vec<Self>, Error> {
     let ret = Self::parse_vec_inner(&mut input)?;
-    if let Some(tt) = input.next() {
+    input.next().map_or(Ok(ret), |tt| {
       Err(Error::new_at_tokens(
         &tt,
         format!("Unconsumed Input '{}'", tt),
       ))
-    } else {
-      Ok(ret)
-    }
+    })
   }
 
   fn parse_vec_generics(
-    mut input: &mut Peekable<impl Iterator<Item = TokenTree>>,
-  ) -> Result<Vec<Type>, Error> {
-    let ret = Self::parse_vec_inner(&mut input)?;
+    input: &mut Peekable<impl Iterator<Item = TokenTree>>,
+  ) -> Result<Vec<Self>, Error> {
+    let ret = Self::parse_vec_inner(input)?;
     if let Some(end) = input.next() {
-      Self::expect_punct(end, '>')?;
+      Self::expect_punct(&end, '>')?;
       Ok(ret)
     } else {
       Err(Error::new("Expected '>' but got to end"))
@@ -114,13 +113,13 @@ impl Type {
   }
   fn parse_vec_inner(
     input: &mut Peekable<impl Iterator<Item = TokenTree>>,
-  ) -> Result<Vec<Type>, Error> {
+  ) -> Result<Vec<Self>, Error> {
     let mut out = vec![];
     while let Some(tt) = input.peek() {
       if Self::is_punct(tt, '>') {
         return Ok(out);
       }
-      out.push(Self::parse(input)?)
+      out.push(Self::parse(input)?);
     }
     Ok(out)
   }
@@ -168,12 +167,12 @@ impl Display for Type {
 impl ToTokens for Type {
   fn to_tokens(&self, stream: &mut TokenStream) {
     if self.fully_qualified {
-      stream.append_all(quote!(::))
+      stream.append_all(quote!(::));
     }
     let first = &self.path[0];
     stream.append_all(quote!(#first));
     for part in &self.path[1..] {
-      stream.append_all(quote!(::#part))
+      stream.append_all(quote!(::#part));
     }
     if !self.generics.is_empty() {
       stream.append_all(quote!(<));
