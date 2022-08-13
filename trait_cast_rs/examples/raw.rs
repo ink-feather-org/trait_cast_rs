@@ -1,8 +1,9 @@
 #![feature(trait_upcasting, const_type_id)]
 #![allow(incomplete_features)]
+
 use std::any::Any;
 
-use trait_cast_rs::{trait_cast, TraitcastTarget, Traitcastable};
+use trait_cast_rs::{TraitcastTarget, Traitcastable};
 
 extern crate trait_cast_rs;
 
@@ -35,29 +36,34 @@ trait Cat {
 
 impl HybridPet {
   /// Pass this function pointer to register_downcast
-  pub fn to_dyn_dog(input: &dyn Traitcastable) -> Option<&(dyn Dog + 'static)> {
+  pub fn to_dyn_ref_dog(input: &dyn Traitcastable) -> Option<&(dyn Dog + 'static)> {
     let any: &dyn Any = input;
     any.downcast_ref::<Self>().map(|selv| selv as &dyn Dog)
   }
-  /// Pass this function pointer to register_downcast
-  pub fn to_dyn_cat(input: &dyn Traitcastable) -> Option<&(dyn Cat + 'static)> {
+  pub fn to_dyn_mut_dog(input: &mut dyn Traitcastable) -> Option<&mut (dyn Dog + 'static)> {
+    let any: &mut dyn Any = input;
+    any.downcast_mut::<Self>().map(|selv| selv as &mut dyn Dog)
+  }
+  pub fn to_dyn_ref_cat(input: &dyn Traitcastable) -> Option<&(dyn Cat + 'static)> {
     let any: &dyn Any = input;
     any.downcast_ref::<Self>().map(|selv| selv as &dyn Cat)
+  }
+  pub fn to_dyn_mut_cat(input: &mut dyn Traitcastable) -> Option<&mut (dyn Cat + 'static)> {
+    let any: &mut dyn Any = input;
+    any.downcast_mut::<Self>().map(|selv| selv as &mut dyn Cat)
   }
 }
 impl Traitcastable for HybridPet {
   fn traitcast_targets(&self) -> &'static [TraitcastTarget] {
     const TARGETS: &'static [TraitcastTarget] = &[
-      TraitcastTarget::create(HybridPet::to_dyn_dog),
-      TraitcastTarget::create(HybridPet::to_dyn_cat),
+      TraitcastTarget::create(HybridPet::to_dyn_ref_dog, HybridPet::to_dyn_mut_dog),
+      TraitcastTarget::create(HybridPet::to_dyn_ref_cat, HybridPet::to_dyn_mut_cat),
     ];
     TARGETS
   }
 }
 
 fn main() {
-  TraitcastTarget::create::<dyn Dog + 'static>(HybridPet::to_dyn_dog);
-
   // The box is technically not needed but kept for added realism
   let pet = Box::new(HybridPet {
     name: "Kokusnuss".to_string(),
@@ -66,14 +72,12 @@ fn main() {
 
   let castable_pet: Box<dyn Traitcastable> = pet;
 
-  // WARNING: YOU MUST USE `as_ref()` otherwise you would cast the Box to an Any!
-  let as_dog = trait_cast::<dyn Dog>(castable_pet.as_ref()).unwrap();
+  let as_dog = castable_pet.trait_cast_ref::<dyn Dog>().unwrap();
   as_dog.bark();
 
-  let as_cat = trait_cast::<dyn Cat>(castable_pet.as_ref()).unwrap();
+  let as_cat = castable_pet.trait_cast_ref::<dyn Cat>().unwrap();
   as_cat.meow();
 
-  let any_pet = castable_pet as Box<dyn Any>;
-  let cast_back: &HybridPet = any_pet.downcast_ref().unwrap();
+  let cast_back = castable_pet.downcast_ref::<HybridPet>().unwrap();
   cast_back.greet();
 }

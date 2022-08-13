@@ -39,13 +39,31 @@ fn gen_mapping_funcs(item_name: &Ident, args: &Args) -> TokenStream2 {
     .vars
     .iter()
     .map(|ident| {
-      let to_dyn_name = format_ident!("__internal_to_dyn_{ident}");
-      quote_spanned!(ident.span() =>
-        pub fn #to_dyn_name(input: &dyn Traitcastable) -> Option<&(dyn #ident + 'static)> {
+      let to_dyn_ref_name = format_ident!("__internal_to_dyn_ref_{ident}");
+      let to_dyn_mut_name = format_ident!("__internal_to_dyn_mut_{ident}");
+      #[cfg(feature = "downcast_unchecked")]
+      let ret = quote_spanned!(ident.span() =>
+        pub fn #to_dyn_ref_name(input: &dyn Traitcastable) -> Option<&(dyn #ident + 'static)> {
+          let any: &dyn Any = input;
+          Some( unsafe {any.downcast_ref_unchecked::<Self>() as &dyn #ident})
+        }
+        pub fn #to_dyn_mut_name(input: &mut dyn Traitcastable) -> Option<&mut (dyn #ident + 'static)> {
+          let any: &mut dyn Any = input;
+          Some( unsafe {any.downcast_mut_unchecked::<Self>() as &mut dyn #ident})
+        }
+      );
+      #[cfg(not(feature = "downcast_unchecked"))]
+      let ret = quote_spanned!(ident.span() =>
+        pub fn #to_dyn_ref_name(input: &dyn Traitcastable) -> Option<&(dyn #ident + 'static)> {
           let any: &dyn Any = input;
           any.downcast_ref::<Self>().map(|selv| selv as &dyn #ident)
         }
-      )
+        pub fn #to_dyn_mut_name(input: &mut dyn Traitcastable) -> Option<&mut (dyn #ident + 'static)> {
+          let any: &mut dyn Any = input;
+          any.downcast_mut::<Self>().map(|selv| selv as &mut dyn #ident)
+        }
+      );
+      ret
     })
     .collect::<TokenStream2>();
   let expanded = quote!(
@@ -60,9 +78,10 @@ fn gen_target_func(item_name: &Ident, args: &Args) -> TokenStream2 {
     .vars
     .iter()
     .map(|ident| {
-      let to_dyn_name = format_ident!("__internal_to_dyn_{ident}");
+      let to_dyn_ref_name = format_ident!("__internal_to_dyn_ref_{ident}");
+      let to_dyn_mut_name = format_ident!("__internal_to_dyn_mut_{ident}");
       quote_spanned!(ident.span() =>
-        TraitcastTarget::create(#item_name::#to_dyn_name),
+        TraitcastTarget::create(#item_name::#to_dyn_ref_name, #item_name::#to_dyn_mut_name),
       )
     })
     .collect::<TokenStream2>();

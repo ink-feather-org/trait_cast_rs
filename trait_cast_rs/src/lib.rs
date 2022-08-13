@@ -1,6 +1,6 @@
 #![no_std]
 #![allow(incomplete_features)]
-#![feature(const_type_id, trait_upcasting)]
+#![feature(const_type_id, const_type_name, trait_upcasting, const_mut_refs)]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 
 #[cfg(feature = "alloc")]

@@ -6,7 +6,7 @@ use trait_cast_rs::{make_trait_castable, TraitcastTarget, Traitcastable};
 
 extern crate trait_cast_rs;
 
-#[make_trait_castable(Dog, Cat)]
+#[make_trait_castable(Dog)]
 struct HybridPet {
   name: String,
 }
@@ -17,21 +17,14 @@ impl HybridPet {
 }
 
 impl Dog for HybridPet {
-  fn bark(&self) {
-    println!("{}: Woof!", self.name);
-  }
-}
-impl Cat for HybridPet {
-  fn meow(&self) {
-    println!("{}: Meow!", self.name);
+  fn rename(&mut self, new_name: String) {
+    println!("Changing name from \"{}\" to \"{}\"", self.name, new_name);
+    self.name = new_name;
   }
 }
 
 trait Dog {
-  fn bark(&self);
-}
-trait Cat {
-  fn meow(&self);
+  fn rename(&mut self, new_tag: String);
 }
 
 fn main() {
@@ -41,13 +34,10 @@ fn main() {
   });
   pet.greet();
 
-  let castable_pet: Box<dyn Traitcastable> = pet;
+  let mut castable_pet: Box<dyn Traitcastable> = pet;
 
-  let as_dog = castable_pet.trait_cast_ref::<dyn Dog>().unwrap();
-  as_dog.bark();
-
-  let as_cat = castable_pet.trait_cast_ref::<dyn Cat>().unwrap();
-  as_cat.meow();
+  let as_dog = castable_pet.trait_cast_mut::<dyn Dog>().unwrap();
+  as_dog.rename("Rommel".to_string());
 
   let cast_back = castable_pet.downcast_ref::<HybridPet>().unwrap();
   cast_back.greet();
