@@ -1,4 +1,5 @@
-#![warn(missing_docs)]
+#![deny(missing_docs)]
+#![warn(clippy::undocumented_unsafe_blocks, clippy::pedantic, clippy::nursery)]
 //! Proc macro automating the implementation of `trait_cast_rs::Traitcastable`.
 //!
 //! See `make_trait_castable` for more details
@@ -197,10 +198,14 @@ fn gen_mapping_funcs(item_name: &Ident, args: &[Type]) -> TokenStream {
       let ret = quote_spanned!(ident.span() =>
         pub fn #to_dyn_ref_name(input: &dyn Traitcastable) -> Option<&(dyn #ident + 'static)> {
           let any: &dyn Any = input;
+          // SAFETY:
+          //   This is safe since we know that `input` is a instance of Self.
           Some( unsafe {any.downcast_ref_unchecked::<Self>() as &dyn #ident})
         }
         pub fn #to_dyn_mut_name(input: &mut dyn Traitcastable) -> Option<&mut (dyn #ident + 'static)> {
           let any: &mut dyn Any = input;
+          // SAFETY:
+          //   This is safe since we know that `input` is a instance of Self.
           Some( unsafe {any.downcast_mut_unchecked::<Self>() as &mut dyn #ident})
         }
       );
