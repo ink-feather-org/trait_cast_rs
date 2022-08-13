@@ -196,14 +196,14 @@ fn gen_mapping_funcs(item_name: &Ident, args: &[Type]) -> TokenStream {
       let to_dyn_mut_name = format_ident!("__internal_to_dyn_mut_{}", ident.to_ident_string());
       #[cfg(feature = "downcast_unchecked")]
       let ret = quote_spanned!(ident.span() =>
-        pub fn #to_dyn_ref_name(input: &dyn Traitcastable) -> Option<&(dyn #ident + 'static)> {
-          let any: &dyn Any = input;
+        pub fn #to_dyn_ref_name(input: &dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&(dyn #ident + 'static)> {
+          let any: &dyn ::core::any::Any = input;
           // SAFETY:
           //   This is safe since we know that `input` is a instance of Self.
           Some( unsafe {any.downcast_ref_unchecked::<Self>() as &dyn #ident})
         }
-        pub fn #to_dyn_mut_name(input: &mut dyn Traitcastable) -> Option<&mut (dyn #ident + 'static)> {
-          let any: &mut dyn Any = input;
+        pub fn #to_dyn_mut_name(input: &mut dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&mut (dyn #ident + 'static)> {
+          let any: &mut dyn ::core::any::Any = input;
           // SAFETY:
           //   This is safe since we know that `input` is a instance of Self.
           Some( unsafe {any.downcast_mut_unchecked::<Self>() as &mut dyn #ident})
@@ -211,12 +211,12 @@ fn gen_mapping_funcs(item_name: &Ident, args: &[Type]) -> TokenStream {
       );
       #[cfg(not(feature = "downcast_unchecked"))]
       let ret = quote_spanned!(ident.span() =>
-        pub fn #to_dyn_ref_name(input: &dyn Traitcastable) -> Option<&(dyn #ident + 'static)> {
-          let any: &dyn Any = input;
+        pub fn #to_dyn_ref_name(input: &dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&(dyn #ident + 'static)> {
+          let any: &dyn ::core::any::Any = input;
           any.downcast_ref::<Self>().map(|selv| selv as &dyn #ident)
         }
-        pub fn #to_dyn_mut_name(input: &mut dyn Traitcastable) -> Option<&mut (dyn #ident + 'static)> {
-          let any: &mut dyn Any = input;
+        pub fn #to_dyn_mut_name(input: &mut dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&mut (dyn #ident + 'static)> {
+          let any: &mut dyn ::core::any::Any = input;
           any.downcast_mut::<Self>().map(|selv| selv as &mut dyn #ident)
         }
       );
@@ -238,14 +238,14 @@ fn gen_target_func(item_name: &Ident, args: &[Type]) -> TokenStream {
       let to_dyn_ref_name = format_ident!("__internal_to_dyn_ref_{}", ident.to_ident_string());
       let to_dyn_mut_name = format_ident!("__internal_to_dyn_mut_{}", ident.to_ident_string());
       quote_spanned!(ident.span() =>
-        TraitcastTarget::create(#item_name::#to_dyn_ref_name, #item_name::#to_dyn_mut_name),
+        ::trait_cast_rs::TraitcastTarget::create(#item_name::#to_dyn_ref_name, #item_name::#to_dyn_mut_name),
       )
     })
     .collect::<TokenStream>();
   let expanded = quote!(
     impl ::trait_cast_rs::Traitcastable for #item_name {
-      fn traitcast_targets(&self) -> &'static [TraitcastTarget] {
-        const TARGETS: &'static [TraitcastTarget] = &[ #targets ];
+      fn traitcast_targets(&self) -> &'static [::trait_cast_rs::TraitcastTarget] {
+        const TARGETS: &'static [::trait_cast_rs::TraitcastTarget] = &[ #targets ];
         TARGETS
       }
     }

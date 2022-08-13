@@ -1,8 +1,7 @@
 #![feature(trait_upcasting, const_type_id)]
 #![allow(incomplete_features)]
-use std::any::Any;
 
-use trait_cast_rs::{make_trait_castable, TraitcastTarget, TraitcastTo, Traitcastable};
+use trait_cast_rs::{make_trait_castable, TraitcastTo, Traitcastable};
 
 extern crate trait_cast_rs;
 
