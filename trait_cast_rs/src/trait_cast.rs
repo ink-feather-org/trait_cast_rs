@@ -35,8 +35,8 @@ pub trait Traitcastable: Any {
   }
 }
 
-macro_rules! implement_any_features {
-  (Any $(+ $traits:ident)*) => {
+macro_rules! implement_with_markers {
+  ($($(+)? $traits:ident)*) => {
     impl Debug for dyn Traitcastable + $($traits +)* {
       fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "Traitcastable to {{")?;
@@ -77,12 +77,46 @@ macro_rules! implement_any_features {
         <Box<dyn Any>>::downcast_unchecked(self)
       }
     }
+    impl dyn Traitcastable + $($traits +)* {
+      pub fn trait_cast_ref<Target: ?Sized + 'static + $($traits +)*>(&self) -> Option<&Target> {
+        let target = self
+          .traitcast_targets()
+          .iter()
+          .find(|possible| possible.target_type_id == TypeId::of::<Target>());
+
+        target.and_then(|target| {
+          let fn_ptr: fn(&dyn Traitcastable) -> Option<&Target> =
+            unsafe { mem::transmute(target.to_dyn_ref) };
+          fn_ptr(self)
+        })
+      }
+
+      pub fn trait_cast_mut<Target: ?Sized + 'static + $($traits +)*>(&mut self) -> Option<&mut Target> {
+        let target = self
+          .traitcast_targets()
+          .iter()
+          .find(|possible| possible.target_type_id == TypeId::of::<Target>());
+
+        target.and_then(|target| {
+          let fn_ptr: fn(&mut dyn Traitcastable) -> Option<&mut Target> =
+            unsafe { mem::transmute(target.to_dyn_mut) };
+          fn_ptr(self)
+        })
+      }
+
+      #[cfg(feature = "alloc")]
+      pub fn trait_cast<Target: ?Sized + 'static + $($traits +)*>(self: Box<Self>) -> Option<Box<Target>> {
+        let raw: &mut Self = unsafe { &mut *Box::into_raw(self) };
+        let to_ref: *mut Target = &mut *raw.trait_cast_mut::<Target>()?;
+        Some(unsafe { Box::from_raw(to_ref) })
+      }
+    }
   };
 }
 
-implement_any_features!(Any);
-implement_any_features!(Any + Send);
-implement_any_features!(Any + Send + Sync);
+implement_with_markers!();
+implement_with_markers!(Send);
+implement_with_markers!(Send + Sync);
 // Maybe support this once min_specialization is supported.
 // pub fn trait_cast<'a, Target: Sized + 'static>(
 //   source: &'a dyn Any,
@@ -90,39 +124,3 @@ implement_any_features!(Any + Send + Sync);
 // ) -> Option<&'a Target> {
 //   source.downcast_ref::<Target>()
 // }
-
-// TODO: Maybe do Send + Sync
-impl dyn Traitcastable {
-  pub fn trait_cast_ref<Target: ?Sized + 'static>(&self) -> Option<&Target> {
-    let target = self
-      .traitcast_targets()
-      .iter()
-      .find(|possible| possible.target_type_id == TypeId::of::<Target>());
-
-    target.and_then(|target| {
-      let fn_ptr: fn(&dyn Traitcastable) -> Option<&Target> =
-        unsafe { mem::transmute(target.to_dyn_ref) };
-      fn_ptr(self)
-    })
-  }
-
-  pub fn trait_cast_mut<Target: ?Sized + 'static>(&mut self) -> Option<&mut Target> {
-    let target = self
-      .traitcast_targets()
-      .iter()
-      .find(|possible| possible.target_type_id == TypeId::of::<Target>());
-
-    target.and_then(|target| {
-      let fn_ptr: fn(&mut dyn Traitcastable) -> Option<&mut Target> =
-        unsafe { mem::transmute(target.to_dyn_mut) };
-      fn_ptr(self)
-    })
-  }
-
-  #[cfg(feature = "alloc")]
-  pub fn trait_cast<Target: ?Sized + 'static>(self: Box<Self>) -> Option<Box<Target>> {
-    let raw: &mut Self = unsafe { &mut *Box::into_raw(self) };
-    let to_ref: *mut Target = &mut *raw.trait_cast_mut::<Target>()?;
-    Some(unsafe { Box::from_raw(to_ref) })
-  }
-}
