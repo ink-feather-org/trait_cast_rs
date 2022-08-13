@@ -54,7 +54,6 @@ impl Type {
     }
   }
   fn parse(mut input: &mut Peekable<impl Iterator<Item = TokenTree>>) -> Result<Type, Error> {
-    //let mut input = input.into_iter().peekable();
     let fully_qualified = Self::take_path_sep(&mut input)?;
 
     let mut ty = Type {
@@ -73,7 +72,7 @@ impl Type {
           } else if Self::is_punct(tt, ',') {
             input.next();
           } else {
-            todo!("Err2");
+            unreachable!("Got {} at unexpected place", tt) // i think, otherwise give some error
           }
         }
         break;
@@ -108,7 +107,6 @@ impl Type {
     let ret = Self::parse_vec_inner(&mut input)?;
     if let Some(end) = input.next() {
       Self::expect_punct(end, '>')?;
-      //dbg!(input.peek());
       Ok(ret)
     } else {
       Err(Error::new("Expected '>' but got to end"))
@@ -181,10 +179,7 @@ impl ToTokens for Type {
       stream.append_all(quote!(<));
       stream.append_separated(self.generics.iter(), quote!(,));
       stream.append_all(quote!(>));
-
-      //todo!("generic_to_token")
     }
-    //stream.append_all(quote!(Dog))
   }
 }
 

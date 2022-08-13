@@ -70,9 +70,13 @@ macro_rules! implement_with_markers {
 
       #[cfg(feature = "alloc")]
       pub fn downcast<T: Any $(+ $traits)*>(self: Box<Self>) -> Result<Box<T>, Box<Self>> {
+
+        #[cfg(feature = "downcast_unchecked")]
         if self.is::<T>() { unsafe { Ok(self.downcast_unchecked::<T>()) } } else { Err(self) }
+        #[cfg(not(feature = "downcast_unchecked"))]
+        if self.is::<T>() { Ok(self.downcast::<T>().unwrap()) } else { Err(self) }
       }
-      #[cfg(feature = "alloc")]
+      #[cfg(all(feature = "alloc", feature = "downcast_unchecked"))]
       pub unsafe fn downcast_unchecked<T: Any $(+ $traits)*>(self: Box<Self>) -> Box<T> {
         <Box<dyn Any>>::downcast_unchecked(self)
       }
@@ -104,8 +108,9 @@ macro_rules! implement_with_markers {
 
       #[cfg(feature = "alloc")]
       pub fn trait_cast<Target: ?Sized + 'static + $($traits +)*>(self: Box<Self>) -> Result<Box<Target>, Box<Self>> {
-        let raw: &mut Self = unsafe { &mut *Box::into_raw(self) };
-        let to_ref: *mut Target = &mut *raw.trait_cast_mut::<Target>().ok_or(self)?;
+        let raw: *mut Self = Box::into_raw(self) ;
+        let raw_ref: &mut Self = unsafe {&mut* raw} ;
+        let to_ref: *mut Target = &mut *raw_ref.trait_cast_mut::<Target>().ok_or(unsafe {Box::from_raw(raw)})?;
         Ok(unsafe { Box::from_raw(to_ref) })
       }
     }

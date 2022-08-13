@@ -6,7 +6,7 @@ use trait_cast_rs::{make_trait_castable, TraitcastTarget, Traitcastable};
 
 extern crate trait_cast_rs;
 
-#[make_trait_castable(Dog<i32>, Dog<TestStruct<::std::primitive::i32>>, Cat<>)]
+#[make_trait_castable(Dog<i32>, Dog<TestStruct<::std::primitive::i32>>, Cat<u128, u32>)]
 struct HybridPet {
   name: String,
 }
@@ -22,15 +22,15 @@ impl<T> Dog<T> for HybridPet {
     println!("{}: Woof({})!", self.name, type_name::<T>());
   }
 }
-impl Cat for HybridPet {
+impl<B> Cat<u128, B> for HybridPet {
   fn meow(&self) {
-    println!("{}: Meow!", self.name);
+    println!("{}: Meow(u128, {})!", self.name, type_name::<B>());
   }
 }
 trait Dog<T> {
   fn bark(&self);
 }
-trait Cat {
+trait Cat<A, B> {
   fn meow(&self);
 }
 
@@ -51,7 +51,7 @@ fn main() {
     .unwrap();
   as_dog.bark();
 
-  let as_cat = castable_pet.trait_cast_ref::<dyn Cat>().unwrap();
+  let as_cat = castable_pet.trait_cast_ref::<dyn Cat<u128, u32>>().unwrap();
   as_cat.meow();
 
   let any_pet = castable_pet as Box<dyn Any>;
