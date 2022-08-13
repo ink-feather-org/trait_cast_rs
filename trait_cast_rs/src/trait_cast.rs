@@ -78,37 +78,35 @@ macro_rules! implement_with_markers {
       }
     }
     impl dyn Traitcastable + $($traits +)* {
+      fn get_trait_cast_target<Target: ?Sized + 'static + $($traits +)*>(&self) -> Option<&'static TraitcastTarget> {
+        self
+        .traitcast_targets()
+        .iter()
+        .find(|possible| possible.target_type_id == TypeId::of::<Target>())
+      }
       pub fn trait_cast_ref<Target: ?Sized + 'static + $($traits +)*>(&self) -> Option<&Target> {
-        let target = self
-          .traitcast_targets()
-          .iter()
-          .find(|possible| possible.target_type_id == TypeId::of::<Target>());
-
-        target.and_then(|target| {
-          let fn_ptr: fn(&dyn Traitcastable) -> Option<&Target> =
-            unsafe { mem::transmute(target.to_dyn_ref) };
-          fn_ptr(self)
-        })
+        self.get_trait_cast_target::<Target>()
+          .and_then(|target| {
+            let fn_ptr: fn(&dyn Traitcastable) -> Option<&Target> =
+              unsafe { mem::transmute(target.to_dyn_ref) };
+            fn_ptr(self)
+          })
       }
 
       pub fn trait_cast_mut<Target: ?Sized + 'static + $($traits +)*>(&mut self) -> Option<&mut Target> {
-        let target = self
-          .traitcast_targets()
-          .iter()
-          .find(|possible| possible.target_type_id == TypeId::of::<Target>());
-
-        target.and_then(|target| {
-          let fn_ptr: fn(&mut dyn Traitcastable) -> Option<&mut Target> =
-            unsafe { mem::transmute(target.to_dyn_mut) };
-          fn_ptr(self)
-        })
+        self.get_trait_cast_target::<Target>()
+          .and_then(|target| {
+            let fn_ptr: fn(&mut dyn Traitcastable) -> Option<&mut Target> =
+              unsafe { mem::transmute(target.to_dyn_mut) };
+            fn_ptr(self)
+          })
       }
 
       #[cfg(feature = "alloc")]
-      pub fn trait_cast<Target: ?Sized + 'static + $($traits +)*>(self: Box<Self>) -> Option<Box<Target>> {
+      pub fn trait_cast<Target: ?Sized + 'static + $($traits +)*>(self: Box<Self>) -> Result<Box<Target>, Box<Self>> {
         let raw: &mut Self = unsafe { &mut *Box::into_raw(self) };
-        let to_ref: *mut Target = &mut *raw.trait_cast_mut::<Target>()?;
-        Some(unsafe { Box::from_raw(to_ref) })
+        let to_ref: *mut Target = &mut *raw.trait_cast_mut::<Target>().ok_or(self)?;
+        Ok(unsafe { Box::from_raw(to_ref) })
       }
     }
   };
