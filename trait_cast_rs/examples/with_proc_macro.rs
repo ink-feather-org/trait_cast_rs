@@ -52,6 +52,6 @@ fn main() {
   let cast_back: &HybridPet = castable_pet.downcast_ref().unwrap();
   cast_back.greet();
 
-  let cast_back: Box<HybridPet> = castable_pet.downcast().unwrap();
-  cast_back.greet();
+  let into_cat: Box<dyn Cat> = castable_pet.downcast().unwrap();
+  into_cat.meow();
 }

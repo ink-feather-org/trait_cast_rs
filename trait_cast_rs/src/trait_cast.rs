@@ -119,10 +119,12 @@ macro_rules! implement_with_markers {
 
       #[cfg(feature = "alloc")]
       default fn downcast(self: Box<Self>) -> Result<Box<Target>, Box<Self>> {
-        let raw: *mut Self = Box::into_raw(self) ;
-        let raw_ref: &mut Self = unsafe {&mut* raw} ;
-        let to_ref: *mut Target = &mut *raw_ref.downcast_mut().ok_or(unsafe {Box::from_raw(raw)})?;
-        Ok(unsafe { Box::from_raw(to_ref) })
+        let raw : *mut Self = Box::into_raw(self);
+        if let Some(to_ref) = unsafe {&mut *raw}.downcast_mut() {
+          Ok(unsafe { Box::from_raw(to_ref) })
+        } else {
+          Err(unsafe {Box::from_raw(raw)})
+        }
       }
 
       #[cfg(all(feature = "alloc", feature = "downcast_unchecked"))]

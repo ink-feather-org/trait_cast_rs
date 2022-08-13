@@ -1,3 +1,8 @@
+#![warn(missing_docs)]
+//! Proc macro automating the implementation of `trait_cast_rs::Traitcastable`.
+//!
+//! See `make_trait_castable` for more details
+
 use std::{
   fmt::{self, Display, Formatter},
   iter::Peekable,
@@ -242,7 +247,40 @@ fn gen_target_func(item_name: &Ident, args: &[Type]) -> TokenStream {
   );
   expanded
 }
-
+/// Attribute macro implementing `Traitcastable` for a struct, enum or union.
+///
+/// Use the arguments to specify all possible target Traits for witch trait objects are
+/// supposed to be downcastable from a dyn `Traitcastable`.
+///
+/// Example:
+/// ```no_build
+///   #![feature(trait_upcasting, const_type_id)]
+///   #![allow(incomplete_features)]
+///   extern crate trait_cast_rs;
+///
+///   use std::any::Any;
+///   use trait_cast_rs::{make_trait_castable, TraitcastTarget, TraitcastTo, Traitcastable};
+///   
+///
+///   #[make_trait_castable(Print)]
+///   struct Source(i32);
+///   
+///   trait Print {
+///     fn print(&self);
+///   }
+///   impl Print for Source {
+///     fn print(&self) {
+///       println!("{}", self.0)
+///     }
+///   }
+///
+///   fn main() {
+///     let source = Box::new(Source(5));
+///     let castable: Box<dyn Traitcastable> = source;
+///     let x: &dyn Print = castable.downcast_ref().unwrap();
+///     x.print();
+///   }
+/// ```
 #[proc_macro_attribute]
 pub fn make_trait_castable(args: TokenStream1, input: TokenStream1) -> TokenStream1 {
   let args = match Type::parse_vec(TokenStream::from(args).into_iter().peekable()) {

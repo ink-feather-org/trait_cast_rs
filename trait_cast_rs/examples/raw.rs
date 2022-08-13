@@ -33,6 +33,7 @@ trait Dog {
 trait Cat {
   fn meow(&self);
 }
+trait Mouse {}
 
 impl HybridPet {
   /// Pass this function pointer to register_downcast
@@ -80,4 +81,10 @@ fn main() {
 
   let cast_back: &HybridPet = castable_pet.downcast_ref().unwrap();
   cast_back.greet();
+
+  let no_mouse = <dyn Traitcastable as TraitcastTo<dyn Mouse>>::downcast(castable_pet);
+  if let Err(no_mouse) = no_mouse {
+    let as_cat: &dyn Cat = no_mouse.downcast_ref().unwrap();
+    as_cat.meow();
+  }
 }
