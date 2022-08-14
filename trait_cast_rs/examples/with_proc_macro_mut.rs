@@ -1,3 +1,6 @@
+#![cfg_attr(feature = "min_specialization", feature(min_specialization))]
+#![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
+
 use trait_cast_rs::{make_trait_castable, TraitcastTo, Traitcastable};
 
 extern crate trait_cast_rs;

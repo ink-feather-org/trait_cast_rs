@@ -197,16 +197,16 @@ fn gen_mapping_funcs(item_name: &Ident, args: &[Type]) -> TokenStream {
       #[cfg(feature = "downcast_unchecked")]
       let ret = quote_spanned!(ident.span() =>
         pub fn #to_dyn_ref_name(input: &dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&(dyn #ident + 'static)> {
-          let any: &dyn ::core::any::Any = input;
+          let casted: &Self = unsafe { input.downcast_ref_unchecked() };
           // SAFETY:
           //   This is safe since we know that `input` is a instance of Self.
-          Some( unsafe {any.downcast_ref_unchecked::<Self>() as &dyn #ident})
+          Some( casted as &dyn #ident)
         }
         pub fn #to_dyn_mut_name(input: &mut dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&mut (dyn #ident + 'static)> {
-          let any: &mut dyn ::core::any::Any = input;
+          let casted: &mut Self = unsafe { input.downcast_mut_unchecked() };
           // SAFETY:
           //   This is safe since we know that `input` is a instance of Self.
-          Some( unsafe {any.downcast_mut_unchecked::<Self>() as &mut dyn #ident})
+          Some( casted as &mut dyn #ident)
         }
       );
       #[cfg(not(feature = "downcast_unchecked"))]

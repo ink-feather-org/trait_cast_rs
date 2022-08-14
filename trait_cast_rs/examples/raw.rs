@@ -1,3 +1,5 @@
+#![cfg_attr(feature = "min_specialization", feature(min_specialization))]
+
 use trait_cast_rs::{TraitcastTarget, TraitcastTo, Traitcastable};
 
 extern crate trait_cast_rs;

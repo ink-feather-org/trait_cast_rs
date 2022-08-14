@@ -7,6 +7,7 @@ edition = "2021"
 default = ["alloc"]
 downcast_unchecked = ["trait_cast_impl_rs/downcast_unchecked"]
 alloc = []
+min_specialization = []
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

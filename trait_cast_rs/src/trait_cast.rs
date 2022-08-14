@@ -104,6 +104,13 @@ pub trait TraitcastTo<Target: ?Sized> {
   unsafe fn downcast_unchecked(self: Box<Self>) -> Box<Target>;
 }
 
+#[cfg(feature = "min_specialization")]
+impl<T: 'static> Traitcastable for T {
+  default fn traitcast_targets(&self) -> &'static [TraitcastTarget] {
+    &[]
+  }
+}
+
 macro_rules! implement_with_markers {
   ($($(+)? $traits:ident)*) => {
     impl Debug for dyn Traitcastable $(+ $traits)* {
