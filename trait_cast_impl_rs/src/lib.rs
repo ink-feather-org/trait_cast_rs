@@ -2,7 +2,7 @@
 #![warn(clippy::undocumented_unsafe_blocks, clippy::pedantic, clippy::nursery)]
 //! Proc macro automating the implementation of `trait_cast_rs::Traitcastable`.
 //!
-//! See `make_trait_castable` for more details
+//! See `make_trait_castable` for more details.
 
 use std::{
   fmt::{self, Display, Formatter},
