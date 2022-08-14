@@ -1,7 +1,7 @@
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 
-use trait_cast_rs::{make_trait_castable, TraitcastTo, Traitcastable};
+use trait_cast_rs::{make_trait_castable, TraitcastTo, TraitcastableAny};
 
 extern crate trait_cast_rs;
 
@@ -41,7 +41,7 @@ fn main() {
   let pet = Box::new(HybridPet::Name("Kokusnuss".to_string()));
   pet.greet();
 
-  let castable_pet: Box<dyn Traitcastable> = pet;
+  let castable_pet: Box<dyn TraitcastableAny> = pet;
 
   let as_dog: &dyn Dog = castable_pet.downcast_ref().unwrap();
   as_dog.bark();

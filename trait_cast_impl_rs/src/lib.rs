@@ -1,6 +1,6 @@
 #![deny(missing_docs)]
 #![warn(clippy::undocumented_unsafe_blocks, clippy::pedantic, clippy::nursery)]
-//! Proc macro automating the implementation of `trait_cast_rs::Traitcastable`.
+//! Proc macro automating the implementation of `trait_cast_rs::TraitcastableAny`.
 //!
 //! See `make_trait_castable` for more details.
 
@@ -196,13 +196,13 @@ fn gen_mapping_funcs(item_name: &Ident, args: &[Type]) -> TokenStream {
       let to_dyn_mut_name = format_ident!("__internal_to_dyn_mut_{}", ident.to_ident_string());
       #[cfg(feature = "downcast_unchecked")]
       let ret = quote_spanned!(ident.span() =>
-        pub fn #to_dyn_ref_name(input: &dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&(dyn #ident + 'static)> {
+        pub fn #to_dyn_ref_name(input: &dyn ::trait_cast_rs::TraitcastableAny) -> ::core::option::Option<&(dyn #ident + 'static)> {
           let casted: &Self = unsafe { input.downcast_ref_unchecked() };
           // SAFETY:
           //   This is safe since we know that `input` is a instance of Self.
           Some( casted as &dyn #ident)
         }
-        pub fn #to_dyn_mut_name(input: &mut dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&mut (dyn #ident + 'static)> {
+        pub fn #to_dyn_mut_name(input: &mut dyn ::trait_cast_rs::TraitcastableAny) -> ::core::option::Option<&mut (dyn #ident + 'static)> {
           let casted: &mut Self = unsafe { input.downcast_mut_unchecked() };
           // SAFETY:
           //   This is safe since we know that `input` is a instance of Self.
@@ -211,11 +211,11 @@ fn gen_mapping_funcs(item_name: &Ident, args: &[Type]) -> TokenStream {
       );
       #[cfg(not(feature = "downcast_unchecked"))]
       let ret = quote_spanned!(ident.span() =>
-        pub fn #to_dyn_ref_name(input: &dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&(dyn #ident + 'static)> {
+        pub fn #to_dyn_ref_name(input: &dyn ::trait_cast_rs::TraitcastableAny) -> ::core::option::Option<&(dyn #ident + 'static)> {
           let casted: Option<&Self> = input.downcast_ref();
           casted.map(|selv| selv as &dyn #ident)
         }
-        pub fn #to_dyn_mut_name(input: &mut dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&mut (dyn #ident + 'static)> {
+        pub fn #to_dyn_mut_name(input: &mut dyn ::trait_cast_rs::TraitcastableAny) -> ::core::option::Option<&mut (dyn #ident + 'static)> {
           let casted:  Option<&mut Self> = input.downcast_mut();
           casted.map(|selv| selv as &mut dyn #ident)
         }
@@ -243,7 +243,7 @@ fn gen_target_func(item_name: &Ident, args: &[Type]) -> TokenStream {
     })
     .collect::<TokenStream>();
   let expanded = quote!(
-    impl ::trait_cast_rs::Traitcastable for #item_name {
+    impl ::trait_cast_rs::TraitcastableAny for #item_name {
       fn traitcast_targets(&self) -> &'static [::trait_cast_rs::TraitcastTarget] {
         const TARGETS: &'static [::trait_cast_rs::TraitcastTarget] = &[ #targets ];
         TARGETS
@@ -252,16 +252,16 @@ fn gen_target_func(item_name: &Ident, args: &[Type]) -> TokenStream {
   );
   expanded
 }
-/// Attribute macro implementing `Traitcastable` for a struct, enum or union.
+/// Attribute macro implementing `TraitcastableAny` for a struct, enum or union.
 ///
 /// Use the arguments to specify all possible target Traits for witch trait objects are
-/// supposed to be downcastable from a dyn `Traitcastable`.
+/// supposed to be downcastable from a dyn `TraitcastableAny`.
 ///
 /// Example:
 /// ```no_build
 ///   extern crate trait_cast_rs;
 ///
-///   use trait_cast_rs::{make_trait_castable, TraitcastTarget, TraitcastTo, Traitcastable};
+///   use trait_cast_rs::{make_trait_castable, TraitcastTarget, TraitcastTo, TraitcastableAny};
 ///   
 ///
 ///   #[make_trait_castable(Print)]
@@ -278,7 +278,7 @@ fn gen_target_func(item_name: &Ident, args: &[Type]) -> TokenStream {
 ///
 ///   fn main() {
 ///     let source = Box::new(Source(5));
-///     let castable: Box<dyn Traitcastable> = source;
+///     let castable: Box<dyn TraitcastableAny> = source;
 ///     let x: &dyn Print = castable.downcast_ref().unwrap();
 ///     x.print();
 ///   }

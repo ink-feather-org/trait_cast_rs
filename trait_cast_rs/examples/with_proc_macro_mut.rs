@@ -1,7 +1,7 @@
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 
-use trait_cast_rs::{make_trait_castable, TraitcastTo, Traitcastable};
+use trait_cast_rs::{make_trait_castable, TraitcastTo, TraitcastableAny};
 
 extern crate trait_cast_rs;
 
@@ -33,7 +33,7 @@ fn main() {
   });
   pet.greet();
 
-  let mut castable_pet: Box<dyn Traitcastable> = pet;
+  let mut castable_pet: Box<dyn TraitcastableAny> = pet;
 
   let as_dog: &mut dyn Dog = castable_pet.downcast_mut().unwrap();
   as_dog.rename("Rommel".to_string());

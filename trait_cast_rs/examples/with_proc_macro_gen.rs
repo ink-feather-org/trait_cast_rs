@@ -3,7 +3,7 @@
 
 use std::any::type_name;
 
-use trait_cast_rs::{make_trait_castable, TraitcastTo, Traitcastable};
+use trait_cast_rs::{make_trait_castable, TraitcastTo, TraitcastableAny};
 
 extern crate trait_cast_rs;
 
@@ -42,7 +42,7 @@ fn main() {
   });
   pet.greet();
 
-  let castable_pet: Box<dyn Traitcastable> = pet;
+  let castable_pet: Box<dyn TraitcastableAny> = pet;
 
   let as_dog: &dyn Dog<i32> = castable_pet.downcast_ref().unwrap();
   as_dog.bark();
