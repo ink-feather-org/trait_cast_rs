@@ -20,6 +20,8 @@ impl TraitcastTarget {
   /// Creates a `TraitcastTarget` from two function pointers.
   ///
   /// This is Safe since we know that the function Pointers have the correct Signature.
+  ///
+  /// As a side effect of this the user also doesn't have to use the `const_type_id` feature flag.
   pub const fn create<Target: 'static + ?Sized>(
     to_dyn_ref: fn(&dyn Traitcastable) -> Option<&Target>,
     to_dyn_mut: fn(&mut dyn Traitcastable) -> Option<&mut Target>,

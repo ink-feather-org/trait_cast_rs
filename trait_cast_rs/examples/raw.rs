@@ -1,8 +1,3 @@
-#![feature(trait_upcasting, const_type_id)]
-#![allow(incomplete_features)]
-
-use std::any::Any;
-
 use trait_cast_rs::{TraitcastTarget, TraitcastTo, Traitcastable};
 
 extern crate trait_cast_rs;
@@ -38,20 +33,20 @@ trait Mouse {}
 impl HybridPet {
   /// Pass this function pointer to register_downcast
   pub fn to_dyn_ref_dog(input: &dyn Traitcastable) -> Option<&(dyn Dog + 'static)> {
-    let any: &dyn Any = input;
-    any.downcast_ref::<Self>().map(|selv| selv as &dyn Dog)
+    let casted: Option<&Self> = input.downcast_ref();
+    casted.map(|selv| selv as &dyn Dog)
   }
   pub fn to_dyn_mut_dog(input: &mut dyn Traitcastable) -> Option<&mut (dyn Dog + 'static)> {
-    let any: &mut dyn Any = input;
-    any.downcast_mut::<Self>().map(|selv| selv as &mut dyn Dog)
+    let casted: Option<&mut Self> = input.downcast_mut();
+    casted.map(|selv| selv as &mut dyn Dog)
   }
   pub fn to_dyn_ref_cat(input: &dyn Traitcastable) -> Option<&(dyn Cat + 'static)> {
-    let any: &dyn Any = input;
-    any.downcast_ref::<Self>().map(|selv| selv as &dyn Cat)
+    let casted: Option<&Self> = input.downcast_ref();
+    casted.map(|selv| selv as &dyn Cat)
   }
   pub fn to_dyn_mut_cat(input: &mut dyn Traitcastable) -> Option<&mut (dyn Cat + 'static)> {
-    let any: &mut dyn Any = input;
-    any.downcast_mut::<Self>().map(|selv| selv as &mut dyn Cat)
+    let casted: Option<&mut Self> = input.downcast_mut();
+    casted.map(|selv| selv as &mut dyn Cat)
   }
 }
 impl Traitcastable for HybridPet {

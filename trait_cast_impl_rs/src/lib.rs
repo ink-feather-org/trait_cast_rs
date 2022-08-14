@@ -212,12 +212,12 @@ fn gen_mapping_funcs(item_name: &Ident, args: &[Type]) -> TokenStream {
       #[cfg(not(feature = "downcast_unchecked"))]
       let ret = quote_spanned!(ident.span() =>
         pub fn #to_dyn_ref_name(input: &dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&(dyn #ident + 'static)> {
-          let any: &dyn ::core::any::Any = input;
-          any.downcast_ref::<Self>().map(|selv| selv as &dyn #ident)
+          let casted: Option<&Self> = input.downcast_ref();
+          casted.map(|selv| selv as &dyn #ident)
         }
         pub fn #to_dyn_mut_name(input: &mut dyn ::trait_cast_rs::Traitcastable) -> ::core::option::Option<&mut (dyn #ident + 'static)> {
-          let any: &mut dyn ::core::any::Any = input;
-          any.downcast_mut::<Self>().map(|selv| selv as &mut dyn #ident)
+          let casted:  Option<&mut Self> = input.downcast_mut();
+          casted.map(|selv| selv as &mut dyn #ident)
         }
       );
       ret
@@ -259,11 +259,8 @@ fn gen_target_func(item_name: &Ident, args: &[Type]) -> TokenStream {
 ///
 /// Example:
 /// ```no_build
-///   #![feature(trait_upcasting, const_type_id)]
-///   #![allow(incomplete_features)]
 ///   extern crate trait_cast_rs;
 ///
-///   use std::any::Any;
 ///   use trait_cast_rs::{make_trait_castable, TraitcastTarget, TraitcastTo, Traitcastable};
 ///   
 ///
