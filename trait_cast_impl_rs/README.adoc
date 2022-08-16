@@ -1,1 +1,0 @@
-= proc-macro helper crate for trait_cast_rs

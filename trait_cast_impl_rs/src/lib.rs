@@ -1,6 +1,6 @@
 #![deny(missing_docs)]
 #![warn(clippy::undocumented_unsafe_blocks, clippy::pedantic, clippy::nursery)]
-//! Proc macro automating the implementation of `trait_cast_rs::TraitcastableAny`.
+//! Proc-macro automating the implementation of `trait_cast_rs::TraitcastableAny`.
 //!
 //! See `make_trait_castable` for more details.
 
@@ -238,7 +238,7 @@ fn gen_target_func(item_name: &Ident, args: &[Type]) -> TokenStream {
       let to_dyn_ref_name = format_ident!("__internal_to_dyn_ref_{}", ident.to_ident_string());
       let to_dyn_mut_name = format_ident!("__internal_to_dyn_mut_{}", ident.to_ident_string());
       quote_spanned!(ident.span() =>
-        ::trait_cast_rs::TraitcastTarget::create(#item_name::#to_dyn_ref_name, #item_name::#to_dyn_mut_name),
+        ::trait_cast_rs::TraitcastTarget::new(#item_name::#to_dyn_ref_name, #item_name::#to_dyn_mut_name),
       )
     })
     .collect::<TokenStream>();
@@ -262,11 +262,11 @@ fn gen_target_func(item_name: &Ident, args: &[Type]) -> TokenStream {
 ///   extern crate trait_cast_rs;
 ///
 ///   use trait_cast_rs::{make_trait_castable, TraitcastTarget, TraitcastTo, TraitcastableAny};
-///   
+///
 ///
 ///   #[make_trait_castable(Print)]
 ///   struct Source(i32);
-///   
+///
 ///   trait Print {
 ///     fn print(&self);
 ///   }
