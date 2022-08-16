@@ -7,7 +7,6 @@ use core::{
 #[cfg(feature = "alloc")]
 use alloc::boxed::Box;
 
-// TODO: impl for all types?
 pub trait CastableToTrait<Target: 'static + ?Sized> {
   fn to_dyn_ref(input: &dyn TraitcastableAny) -> Option<&Target>;
   fn to_dyn_mut(input: &mut dyn TraitcastableAny) -> Option<&mut Target>;
@@ -47,12 +46,6 @@ impl TraitcastTarget {
     Self::new(Src::to_dyn_ref, Src::to_dyn_mut)
   }
 }
-
-// impl<Target: 'static + ?Sized, Src: CastableToTrait<Target>> From<Src> for TraitcastTarget {
-//   fn from(src: Src) -> Self {
-//     Self::new(Src::to_dyn_ref, Src::to_dyn_mut)
-//   }
-// }
 
 /// A Trait marking a Type as being able to traitcast to from `dyn TraitcastableAny` to another `dyn Trait`.
 ///
