@@ -1,7 +1,10 @@
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![feature(trait_upcasting)]
 
-use trait_cast_rs::{CastableToTrait, TraitcastTarget, TraitcastTo, TraitcastableAny};
+use trait_cast_rs::{
+  TraitcastTarget, TraitcastableAny, TraitcastableAnyInfra, TraitcastableAnyInfraExt,
+  TraitcastableTo,
+};
 
 extern crate trait_cast_rs;
 
@@ -33,7 +36,7 @@ trait Cat: TraitcastableAny {
 }
 trait Mouse {}
 
-impl CastableToTrait<dyn Dog + 'static> for HybridPet {
+impl TraitcastableTo<dyn Dog + 'static> for HybridPet {
   fn to_dyn_ref(input: &dyn TraitcastableAny) -> Option<&(dyn Dog + 'static)> {
     let casted: Option<&Self> = input.downcast_ref();
     casted.map(|selv| selv as &dyn Dog)
@@ -45,7 +48,7 @@ impl CastableToTrait<dyn Dog + 'static> for HybridPet {
   }
 }
 
-impl CastableToTrait<dyn Cat> for HybridPet {
+impl TraitcastableTo<dyn Cat> for HybridPet {
   fn to_dyn_ref(input: &dyn TraitcastableAny) -> Option<&dyn Cat> {
     let casted: Option<&Self> = input.downcast_ref();
     casted.map(|selv| selv as &dyn Cat)
@@ -57,13 +60,15 @@ impl CastableToTrait<dyn Cat> for HybridPet {
   }
 }
 
+impl HybridPet {
+  const TARGETS: &'static [TraitcastTarget] = &[
+    TraitcastTarget::from::<HybridPet, dyn Dog>(),
+    TraitcastTarget::from::<HybridPet, dyn Cat>(),
+  ];
+}
 impl TraitcastableAny for HybridPet {
-  fn traitcast_targets(&self) -> &'static [TraitcastTarget] {
-    const TARGETS: &'static [TraitcastTarget] = &[
-      TraitcastTarget::from::<HybridPet, dyn Dog>(),
-      TraitcastTarget::from::<HybridPet, dyn Cat>(),
-    ];
-    TARGETS
+  fn traitcast_targets(&self) -> &[TraitcastTarget] {
+    Self::TARGETS
   }
 }
 
@@ -89,10 +94,10 @@ fn main() {
   let downcast_to_cat_again: &dyn Cat = upcast_ref.downcast_ref().unwrap();
   downcast_to_cat_again.meow();
 
-  let as_box_cat: Box<dyn Cat> = castable_pet.downcast().unwrap();
+  let as_box_cat: Box<dyn Cat> = TraitcastableAnyInfraExt::downcast(castable_pet).unwrap();
   let castable_pet: Box<dyn TraitcastableAny> = as_box_cat;
 
-  let no_mouse = <dyn TraitcastableAny as TraitcastTo<dyn Mouse>>::downcast(castable_pet);
+  let no_mouse = castable_pet.downcast::<dyn Mouse>();
   if let Err(no_mouse) = no_mouse {
     let as_cat: &dyn Cat = no_mouse.downcast_ref().unwrap();
     as_cat.meow();

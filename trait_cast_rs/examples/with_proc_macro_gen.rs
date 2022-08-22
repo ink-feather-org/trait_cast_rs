@@ -3,7 +3,7 @@
 
 use std::any::type_name;
 
-use trait_cast_rs::{make_trait_castable, TraitcastTo, TraitcastableAny};
+use trait_cast_rs::{make_trait_castable, TraitcastableAny, TraitcastableAnyInfra};
 
 extern crate trait_cast_rs;
 

@@ -1,5 +1,5 @@
 #![no_std]
-#![deny(missing_docs)]
+// TODO: #![deny(missing_docs)]
 #![warn(clippy::undocumented_unsafe_blocks, clippy::pedantic, clippy::nursery)]
 #![allow(incomplete_features)]
 #![feature(
