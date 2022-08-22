@@ -159,7 +159,7 @@ pub trait TraitcastableAnyInfraExt<Target: ?Sized + 'static>: Sized {
 
 #[cfg(feature = "min_specialization")]
 impl<T: 'static> TraitcastableAny for T {
-  default fn traitcast_targets(&self) -> &'static [TraitcastTarget] {
+  default fn traitcast_targets(&self) -> &[TraitcastTarget] {
     &[]
   }
 }
@@ -208,7 +208,7 @@ macro_rules! implement_with_markers {
 
       default fn downcast_mut(&mut self) -> Option<&mut Target> {
         // SAFETY: The default implementation is sound. Only user implementations can cause unsoundness.
-        let raw_fn_ptr = unsafe { self.find_traitcast_target(TypeId::of::<Target>()) }.map(|target| target.to_dyn_mut);
+        let raw_fn_ptr = unsafe { Self::find_traitcast_target(self, TypeId::of::<Target>()) }.map(|target| target.to_dyn_mut);
         raw_fn_ptr.and_then(|raw_fn_ptr| {
             let fn_ptr: fn(&mut dyn TraitcastableAny) -> Option<&mut Target> =
             // SAFETY:
@@ -273,14 +273,14 @@ impl<Src: TraitcastableAnyInfra<Target> + ?Sized, Target: ?Sized + 'static>
     }
   }
   #[cfg(feature = "downcast_unchecked")]
-  default unsafe fn downcast_unchecked(self: Box<Self>) -> Box<Target> {
-    self.downcast().unwrap_unchecked()
+  default unsafe fn downcast_unchecked(self) -> Self::Output {
+    <Box<Src> as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
   }
 }
 
 #[cfg(feature = "alloc")]
-impl<Src: TraitcastableAnyInfra<Target> + ?Sized, Target: Sized + 'static>
-  TraitcastableAnyInfraExt<Target> for Box<Src>
+impl<Src: TraitcastableAnyInfra<Target>, Target: Sized + 'static> TraitcastableAnyInfraExt<Target>
+  for Box<Src>
 {
   fn downcast(self) -> Result<Self::Output, Self> {
     #[cfg(feature = "downcast_unchecked")]
@@ -293,14 +293,14 @@ impl<Src: TraitcastableAnyInfra<Target> + ?Sized, Target: Sized + 'static>
     }
     #[cfg(not(feature = "downcast_unchecked"))]
     if TraitcastableAnyInfra::<Target>::is(self.as_ref()) {
-      Ok(<Box<dyn Any>>::downcast(self).unwrap())
+      Ok(<Box<dyn Any>>::downcast::<Target>(self).unwrap())
     } else {
       Err(self)
     }
   }
 
   #[cfg(feature = "downcast_unchecked")]
-  unsafe fn downcast_unchecked(self) -> Box<Target> {
+  unsafe fn downcast_unchecked(self) -> Self::Output {
     <Box<dyn Any>>::downcast_unchecked::<Target>(self)
   }
 }
@@ -328,8 +328,8 @@ impl<Src: TraitcastableAnyInfra<Target>, Target: ?Sized + 'static> Traitcastable
     }
   }
   #[cfg(feature = "downcast_unchecked")]
-  default unsafe fn downcast_unchecked(self: Rc<Self>) -> Rc<Target> {
-    self.downcast().unwrap_unchecked()
+  default unsafe fn downcast_unchecked(self) -> Self::Output {
+    <Rc<Src> as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
   }
 }
 
@@ -355,7 +355,7 @@ impl<Src: TraitcastableAnyInfra<Target>, Target: Sized + 'static> TraitcastableA
   }
 
   #[cfg(feature = "downcast_unchecked")]
-  unsafe fn downcast_unchecked(self) -> Rc<Target> {
+  unsafe fn downcast_unchecked(self) -> Self::Output {
     <Rc<dyn Any>>::downcast_unchecked::<Target>(self)
   }
 }
@@ -383,8 +383,8 @@ impl<Src: TraitcastableAnyInfra<Target> + Send + Sync, Target: ?Sized + 'static 
     }
   }
   #[cfg(feature = "downcast_unchecked")]
-  default unsafe fn downcast_unchecked(self: Arc<Self>) -> Arc<Target> {
-    self.downcast().unwrap_unchecked()
+  default unsafe fn downcast_unchecked(self) -> Self::Output {
+    <Arc<Src> as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
   }
 }
 
@@ -397,7 +397,7 @@ impl<Src: TraitcastableAnyInfra<Target> + Send + Sync, Target: Sized + 'static +
     if TraitcastableAnyInfra::<Target>::is(self.as_ref()) {
       // SAFETY:
       // We checked for dynamic type equality `is` in the previous if.
-      unsafe { Ok(<Arc<dyn Any>>::downcast_unchecked(self)) }
+      unsafe { Ok(<Arc<dyn Any + Send + Sync>>::downcast_unchecked(self)) }
     } else {
       Err(self)
     }
@@ -410,8 +410,8 @@ impl<Src: TraitcastableAnyInfra<Target> + Send + Sync, Target: Sized + 'static +
   }
 
   #[cfg(feature = "downcast_unchecked")]
-  unsafe fn downcast_unchecked(self) -> Arc<Target> {
-    <Arc<dyn Any>>::downcast_unchecked::<Target>(self)
+  unsafe fn downcast_unchecked(self) -> Self::Output {
+    <Arc<dyn Any + Send + Sync>>::downcast_unchecked::<Target>(self)
   }
 }
 
