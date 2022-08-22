@@ -306,8 +306,8 @@ impl<Src: TraitcastableAnyInfra<Target>, Target: Sized + 'static> TraitcastableA
 }
 
 #[cfg(feature = "alloc")]
-impl<Src: TraitcastableAnyInfra<Target>, Target: ?Sized + 'static> TraitcastableAnyInfraExt<Target>
-  for Rc<Src>
+impl<Src: TraitcastableAnyInfra<Target> + ?Sized, Target: ?Sized + 'static>
+  TraitcastableAnyInfraExt<Target> for Rc<Src>
 {
   type Output = Rc<Target>;
 
@@ -361,8 +361,10 @@ impl<Src: TraitcastableAnyInfra<Target>, Target: Sized + 'static> TraitcastableA
 }
 
 #[cfg(feature = "alloc")]
-impl<Src: TraitcastableAnyInfra<Target> + Send + Sync, Target: ?Sized + 'static + Send + Sync>
-  TraitcastableAnyInfraExt<Target> for Arc<Src>
+impl<
+    Src: TraitcastableAnyInfra<Target> + ?Sized + Send + Sync,
+    Target: ?Sized + 'static + Send + Sync,
+  > TraitcastableAnyInfraExt<Target> for Arc<Src>
 {
   type Output = Arc<Target>;
 
