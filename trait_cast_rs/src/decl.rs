@@ -1,3 +1,14 @@
+/// Declarative macro for automatic implementation of `TraitcastableAny` (and `TraitcastableTo`).
+/// Generally not for direct invocation, but rather used by the proc-macro `make_trait_castable`.
+///
+/// # Usage
+/// ```rust
+/// make_trait_castable_decl! {
+///     SrcStruct1 => (DstTrait1, DstTrait2),
+///     SrcStruct2 => (DstTrait3, DstTrait4),
+/// }
+/// ```
+
 #[macro_export]
 macro_rules! make_trait_castable_decl {
   ($($source:ty => ($($target:path),+ $(,)?)),+$(,)?) => {
