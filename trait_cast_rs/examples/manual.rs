@@ -85,6 +85,9 @@ fn main() {
   let cast_back: &HybridPet = castable_pet.downcast_ref().unwrap();
   cast_back.greet();
 
+  // upcasting examples
+  // require feature flag trait_upcasting
+  // you must also add TraitcastableAny to your trait
   let upcast_ref: &dyn TraitcastableAny = as_cat;
   let downcast_to_cat_again: &dyn Cat = upcast_ref.downcast_ref().unwrap();
   downcast_to_cat_again.meow();
@@ -92,6 +95,8 @@ fn main() {
   let as_box_cat: Box<dyn Cat> = castable_pet.downcast().unwrap();
   let castable_pet: Box<dyn TraitcastableAny> = as_box_cat;
 
+  // failed cast example
+  // shows how to recover the box without dropping it
   let no_mouse = <dyn TraitcastableAny as TraitcastTo<dyn Mouse>>::downcast(castable_pet);
   if let Err(no_mouse) = no_mouse {
     let as_cat: &dyn Cat = no_mouse.downcast_ref().unwrap();
