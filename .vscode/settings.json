@@ -9,6 +9,9 @@
         "selv",
         "Traitcast",
         "TraitcastableAny",
-        "upcasting"
+        "upcasting",
+        "TraitcastableTo",
+        "downcasts",
+        "ptrs"
     ]
 }

@@ -3,11 +3,13 @@
 
 use std::any::type_name;
 
-use trait_cast_rs::{make_trait_castable, TraitcastableAny, TraitcastableAnyInfra};
+use trait_cast_rs::{make_trait_castable_decl, TraitcastableAny, TraitcastableAnyInfra};
 
 extern crate trait_cast_rs;
 
-#[make_trait_castable(Dog<i32>, Dog<TestStruct<::std::primitive::i32>>, Cat<u128, u32>)]
+make_trait_castable_decl! {
+  HybridPet => (Dog<i32>, Dog<TestStruct<::std::primitive::i32>>, Cat<u128, u32>),
+}
 struct HybridPet {
   name: String,
 }

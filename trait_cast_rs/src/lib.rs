@@ -1,5 +1,5 @@
 #![no_std]
-#![deny(missing_docs)]
+// TODO: #![deny(missing_docs)]
 #![warn(clippy::undocumented_unsafe_blocks, clippy::pedantic, clippy::nursery)]
 #![allow(incomplete_features)]
 #![feature(
@@ -18,6 +18,8 @@ extern crate alloc;
 
 mod trait_cast;
 pub use trait_cast::*;
+
+mod decl;
 
 pub use trait_cast_impl_rs::make_trait_castable;
 
