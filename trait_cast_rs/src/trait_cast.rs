@@ -56,6 +56,7 @@ impl TraitcastTarget {
   pub const fn from<Src: TraitcastableTo<Target>, Target: 'static + ?Sized>() -> Self {
     Self::from_fn_ptrs(Src::to_dyn_ref, Src::to_dyn_mut)
   }
+  /// Returns the type_id of the type to which can be cast with this instance.
   pub const fn target_type_id(&self) -> TypeId {
     self.target_type_id
   }
@@ -136,10 +137,15 @@ pub trait TraitcastableAnyInfra<Target: ?Sized>: 'static {
   unsafe fn downcast_mut_unchecked(&mut self) -> &mut Target;
 }
 
-/// TODO Allocator SUPPORT
+// TODO: Allocator api support.
+
+/// Extension Trait to implement over Smart Pointer Types (`Box`, `Rc`, `Arc`).
+///
+/// Tries to mimic the API of `Any` but additionally allows downcasts to select trait objects.
 #[cfg(feature = "alloc")]
 #[doc(cfg(feature = "alloc"))]
 pub trait TraitcastableAnyInfraExt<Target: ?Sized + 'static>: Sized {
+  /// The type that will be returned on a successful cast. Something like `Box<Target>`.
   type Output;
 
   /// Same as `downcast_ref` and `downcast_mut`, except that it downcasts a `Box` in place.
