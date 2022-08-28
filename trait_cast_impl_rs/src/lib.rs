@@ -45,15 +45,12 @@ pub fn make_trait_castable(args: TokenStream1, input: TokenStream1) -> TokenStre
   let args = TokenStream::from(args);
   let input = match parse_declaration(input.into()) {
     Ok(Declaration::Function(fun)) => {
-      let mut error = Error::new_at_span(
+      return Error::new_at_span(
         fun.name.span(),
-        "Can not implement `Traitcast` for functions",
-      );
-      error.combine(Error::new_at_span(
-        fun.name.span(),
-        "Expected a struct, enum or union definition",
-      ));
-      return error.to_compile_error().into();
+        "Can not implement `Traitcast` for functions, expected a struct, enum or union definition",
+      )
+      .to_compile_error()
+      .into();
     },
     Ok(input) => input,
     Err(error) => {
