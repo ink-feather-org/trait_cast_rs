@@ -2,6 +2,16 @@
 name = "trait_cast_rs"
 version = "0.9.0"
 edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = [
+  "raldone01 <raldone01@gmail.com>",
+  "onestacked <chrisi.schrefl@gmail.com>",
+]
+description = "Get your own Any with support for casting to trait objects."
+homepage = "https://github.com/raldone01/trait_cast_rs"
+repository = "https://github.com/raldone01/trait_cast_rs"
+categories = ["no-std", "rust-patterns"]
+keywords = ["trait", "cast", "any", "upcast", "any"]
 
 [features]
 default = ["alloc"]
