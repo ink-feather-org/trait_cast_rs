@@ -15,6 +15,7 @@
         "TraitcastableTo",
         "ptrs",
         "upcasting",
-        "downcasting"
+        "downcasting",
+        "casted"
     ]
 }

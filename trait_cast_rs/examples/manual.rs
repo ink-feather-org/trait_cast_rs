@@ -7,8 +7,6 @@ use trait_cast_rs::{
   TraitcastableTo,
 };
 
-extern crate trait_cast_rs;
-
 struct HybridPet {
   name: String,
 }

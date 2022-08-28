@@ -58,9 +58,8 @@ impl<T: Display + 'static, V: Display + 'static + ?Sized> TraitcastableTo<dyn Ca
   }
 }
 
-// Next line is no no because of "use of generic parameter from outer function"
-// would have to fall back to lazy_static
-//impl<T: Display + 'static> TraitcastableAny for HybridPet<T> {
+// The `TARGETS` slice can not be declared inside the `traitcast_targets` function.
+// The "use of generic parameter from outer function" rust limitation is the cause.
 impl<T: Display + 'static> HybridPet<T> {
   const TARGETS: &[TraitcastTarget] = &[
     TraitcastTarget::from::<Self, dyn Dog>(),
@@ -91,4 +90,9 @@ fn main() {
 
   let cast_back: &HybridPet<String> = castable_pet.downcast_ref().unwrap();
   cast_back.greet();
+
+  // Concrete generic `Cat<String>` not specified as a target for `HybridPet<String>`.
+  // Adding `TraitcastTarget::from::<Self, dyn Cat<String>>(),` to the targets would make the cast valid.
+  let invalid_cast: Option<&dyn Cat<String>> = castable_pet.downcast_ref();
+  assert!(invalid_cast.is_none());
 }

@@ -7,28 +7,18 @@ use std::any::Any;
 
 use trait_cast_rs::{make_trait_castable_decl, TraitcastableAny, TraitcastableAnyInfra};
 
-extern crate trait_cast_rs;
-
 struct HybridPet {
   name: String,
 }
 
-struct HybridAnimal {
-  name: String,
-}
-
 make_trait_castable_decl! {
-    HybridPet => (Dog, Cat),
-    HybridAnimal => (Cow, Cat),
+  HybridPet => (Dog, Cat),
+  // Multiple standalone entries in one macro are possible.
+  // HybridAnimal => (Cow, Cat),
+  // Sunflower => (Flower, Plant)
 }
 
 impl HybridPet {
-  fn greet(&self) {
-    println!("{}: Hi", self.name)
-  }
-}
-
-impl HybridAnimal {
   fn greet(&self) {
     println!("{}: Hi", self.name)
   }
@@ -45,25 +35,11 @@ impl Cat for HybridPet {
   }
 }
 
-impl Cow for HybridAnimal {
-  fn moo(&self) {
-    println!("{}: Moo!", self.name);
-  }
-}
-impl Cat for HybridAnimal {
-  fn meow(&self) {
-    println!("{}: Meow!", self.name);
-  }
-}
-
 trait Dog {
   fn bark(&self);
 }
 trait Cat {
   fn meow(&self);
-}
-trait Cow {
-  fn moo(&self);
 }
 
 fn main() {
@@ -81,25 +57,7 @@ fn main() {
   let as_cat: &dyn Cat = castable_pet.downcast_ref().unwrap();
   as_cat.meow();
 
-  let any_pet = castable_pet as Box<dyn Any>;
+  let any_pet: Box<dyn Any> = castable_pet;
   let cast_back: &HybridPet = any_pet.downcast_ref().unwrap();
-  cast_back.greet();
-
-  // The box is technically not needed but kept for added realism
-  let animal = Box::new(HybridAnimal {
-    name: "Cyow".to_string(),
-  });
-  animal.greet();
-
-  let castable_animal: Box<dyn TraitcastableAny> = animal;
-
-  let as_cat: &dyn Cat = castable_animal.downcast_ref().unwrap();
-  as_cat.meow();
-
-  let as_cow: &dyn Cow = castable_animal.downcast_ref().unwrap();
-  as_cow.moo();
-
-  let any_animal = castable_animal as Box<dyn Any>;
-  let cast_back: &HybridAnimal = any_animal.downcast_ref().unwrap();
   cast_back.greet();
 }

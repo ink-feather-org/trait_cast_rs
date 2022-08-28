@@ -46,6 +46,7 @@ Example
 -------
 
 ```rust
+# #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 use trait_cast_rs::{
   make_trait_castable, TraitcastableAny, TraitcastableAnyInfra, TraitcastableAnyInfraExt,
 };
