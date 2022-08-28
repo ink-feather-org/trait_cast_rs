@@ -3,16 +3,18 @@
     "cSpell.words": [
         "castable",
         "downcastable",
+        "downcasts",
         "Kokusnuss",
         "Peekable",
+        "ptrs",
         "punct",
         "selv",
         "Traitcast",
+        "traitcastable",
         "TraitcastableAny",
-        "upcasting",
         "TraitcastableTo",
-        "downcasts",
         "ptrs",
+        "upcasting",
         "downcasting"
     ]
 }
