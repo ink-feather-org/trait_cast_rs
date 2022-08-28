@@ -15,8 +15,7 @@ What can this crate do?
 ------------------------
 
 This crate adds the `TraitcastableAny` replacement trait for `Any`.
-It can be used exactly like the `Any` trait for downcasting to a concrete type.
-With the `trait_upcasting` feature you can even cast any `&dyn TraitcastableAny` to `&dyn Any`.
+It closely resembles the `Any` trait for downcasting to a concrete type.
 Additionally the `TraitcastableAny` trait allows you to **directly** downcast to other `&dyn Trait`s.
 
 To make this work you must specify all *target* traits you want to be able to downcast to in the `make_trait_castable(Trait1, Trait2, ...)` attribute macro.
@@ -68,6 +67,17 @@ Check out the [examples](https://github.com/raldone01/trait_cast_rs/tree/main/tr
 If you want to do something the `make_trait_castable` attribute macro can't handle (like implementing for generic structs - pull requests are open) check out the `manual*.rs` examples.
 
 There is also a decl marco available - check out the `with_decl_macro*.rs` examples.
+
+Good to know
+------------
+
+With the `trait_upcasting` feature you can even cast any `&dyn TraitcastableAny` to `&dyn Any`.
+Alternatively you can list the `Any` trait as a traitcast target.
+
+Consider enabling the `min_specialization` crate trait.
+It makes all `'static` types into `TraitcastableAny`s.
+Even types you don't control.
+However the default implementation of `TraitcastableAny` has no downcast targets.
 
 Premature Optimization
 ----------------------
