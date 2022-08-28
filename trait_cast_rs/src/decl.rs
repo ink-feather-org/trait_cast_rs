@@ -2,7 +2,7 @@
 /// Generally not for direct invocation, but rather used by the proc-macro `make_trait_castable`.
 ///
 /// # Usage
-/// ```rust
+/// ```no_build
 /// make_trait_castable_decl! {
 ///     SrcStruct1 => (DstTrait1, DstTrait2),
 ///     SrcStruct2 => (DstTrait3, DstTrait4),
