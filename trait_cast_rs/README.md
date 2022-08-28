@@ -1,7 +1,7 @@
 trait_cast_rs
 =========================
 
-[![Build Status](https://travis-ci.org/raldone01/trait_cast_rs.svg?branch=master)](https://travis-ci.org/raldone01/trait_cast_rs)
+[![Rust](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust.yml/badge.svg)](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust.yml)
 
 <!-- The rest of this section comes straight from the crate docs from the source. -->
 
