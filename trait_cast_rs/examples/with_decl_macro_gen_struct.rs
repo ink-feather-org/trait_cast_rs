@@ -28,6 +28,7 @@ trait Dog {
   fn bark(&self);
 }
 
+/// Note: The `+ ?Sized` trait bound is not generally required but used to allow `str`.
 trait Cat<T: Display + ?Sized> {
   fn meow(&self, speak: &T);
 }
