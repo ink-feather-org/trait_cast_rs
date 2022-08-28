@@ -163,21 +163,20 @@ impl<T: 'static> TraitcastableAny for T {
     &[]
   }
 }
-
+impl Debug for dyn TraitcastableAny {
+  fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+    write!(f, "TraitcastableAny to {{")?;
+    for (i, target) in self.traitcast_targets().iter().enumerate() {
+      if i != 0 {
+        write!(f, ", ")?;
+      }
+      write!(f, "{}", target.target_type_name)?;
+    }
+    write!(f, "}}")
+  }
+}
 macro_rules! implement_with_markers {
   ($($(+)? $traits:ident)*) => {
-    impl Debug for dyn TraitcastableAny $(+ $traits)* {
-      fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "TraitcastableAny to {{")?;
-        for (i, target) in self.traitcast_targets().iter().enumerate() {
-          if i != 0 {
-            write!(f, ", ")?;
-          }
-          write!(f, "{}", target.target_type_name)?;
-        }
-        write!(f, "}}")
-      }
-    }
     impl<Target: ?Sized + 'static + $($traits +)*> TraitcastableAnyInfra<Target> for dyn TraitcastableAny $(+ $traits)* {
       default fn is(&self) -> bool {
         false
