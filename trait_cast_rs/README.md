@@ -2,7 +2,8 @@ trait_cast_rs
 =========================
 
 [![Rust](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust.yml/badge.svg)](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust.yml)
-![crates.io](https://img.shields.io/crates/v/trait_cast_rs.svg)
+[![docs.rs](https://docs.rs/trait_cast_rs/badge.svg)](https://docs.rs/trait_cast_rs)
+[![crates.io](https://img.shields.io/crates/v/trait_cast_rs.svg)](https://crates.io/crates/trait_cast_rs)
 
 <!-- The rest of this section comes straight from the crate docs from the source. -->
 
