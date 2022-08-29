@@ -11,7 +11,7 @@ description = "Proc-macro implementation for the 'trait_cast_rs' crate."
 homepage = "https://github.com/raldone01/trait_cast_rs"
 repository = "https://github.com/raldone01/trait_cast_rs"
 categories = ["no-std", "rust-patterns"]
-keywords = ["trait", "cast", "any", "upcast", "any"]
+keywords = ["trait", "cast", "any", "upcast", "rtti"]
 
 [features]
 default = []
