@@ -30,7 +30,9 @@ Usage
 
 1. Add the `trait_cast_rs` crate to your `Cargo.toml` and switch to a nightly compiler.
 
-2. Add the `#[make_trait_castable(Trait1, Trait2, ...)]` macro to your struct/enum/union. List all traits you eventually want to be able to `downcast` to. You must implement all listed traits.
+2. Add the `#[make_trait_castable(Trait1, Trait2, ...)]` macro to your struct/enum/union.
+    List all traits you eventually want to be able to `downcast` to.
+    You must implement all listed traits.
 
 3. Use references to `dyn TraitcastableAny` throughout your code instead of `dyn Any`.
 
@@ -65,7 +67,8 @@ EVEN MORE Examples 🔥
 
 Check out the [examples](https://github.com/raldone01/trait_cast_rs/tree/main/trait_cast_rs/examples).
 
-If you want to do something the `make_trait_castable` attribute macro can't handle (like implementing for generic structs - pull requests are open) check out the `manual*.rs` examples.
+If you want to do something the `make_trait_castable` attribute macro can't handle (like implementing for generic structs - pull requests are open)
+check out the `manual*.rs` examples.
 
 There is also a decl marco available - check out the `with_decl_macro*.rs` examples.
 
@@ -84,7 +87,8 @@ Premature Optimization
 ----------------------
 
 The order of the parameters for `make_trait_castable` determines the lookup order.
-So you should order them according to the `downcast` frequency. With the most frequent traits first.
+So you should order them according to the `downcast` frequency.
+With the most frequent traits first.
 
 Authors
 -------
@@ -121,22 +125,39 @@ Compile time:
 
 2. Add a `traitcast_targets` function that returns a const slice of (`typeid`, transmuted *casting* function ptr).
 
-Runtime: Get targets array -> Find the target `typeid` -> Transmute function pointer back to original type -> Call the function pointer to get the wanted trait object -> return it -> 💲 profit 💲
+Runtime: 
+
+1. Get targets array 
+2. Find the target `typeid`
+3. Transmute function pointer back to original type
+4. Call the function pointer to get the wanted trait object
+5. Return it
+6. 💲 Profit 💲
 
 SAFETY 🏰
 ---------
 
 * The unchecked variants of the `downcast` function all use unsafe - expectedly.
-* The only other use of unsafe is the transmutation of function pointers. However when they are called they are transmuted back to their original type. So this should be `105%` save. ~~As long as `typeid`s don't collide.~~
+* The only other use of unsafe is the transmutation of function pointers.
+  However when they are called they are transmuted back to their original type.
+  So this should be `105%` save. ~~As long as `typeid`s don't collide.~~
 
 Alternatives (~~and why our crate is the best~~)
 --------------------------------------------
 
-This alternatives section is not exhaustive for a more objective/detailed comparison see the alternatives section of [cast_trait_object](https://crates.io/crates/cast_trait_object#Alternatives).
+This alternatives section is not exhaustive for a more objective/detailed comparison 
+see the alternatives section of [cast_trait_object](https://crates.io/crates/cast_trait_object#Alternatives).
 
-* [mopa](https://crates.io/crates/mopa): Had its last update 6 years ago. Has some unresolved [unsoundness issues](https://github.com/chris-morgan/mopa/issues/13). Also requires modifications on traits themselves while we just modify the struct/enum/union (see note above).
-* [mopa-maintained](https://crates.io/crates/mopa-maintained): Might have fixed some issues but still has an old code base with just a version bump.
-* [traitcast](https://crates.io/crates/traitcast): Has no readme on [crates.io](https://crates.io/). Uses a GLOBAL REGISTRY with `lazy_static`. To be fair it allows you to use the default `Any` and doesn't require nightly.
+* [mopa](https://crates.io/crates/mopa):
+    Had its last update 6 years ago.
+    Has some unresolved [unsoundness issues](https://github.com/chris-morgan/mopa/issues/13).
+    Also requires modifications on traits themselves while we just modify the struct/enum/union (see note above).
+* [mopa-maintained](https://crates.io/crates/mopa-maintained):
+    Might have fixed some issues but still has an old code base with just a version bump.
+* [traitcast](https://crates.io/crates/traitcast):
+    Has no readme on [crates.io](https://crates.io/).
+    Uses a GLOBAL REGISTRY with `lazy_static`.
+    To be fair it allows you to use the default `Any` and doesn't require nightly.
 
 TODO: Remove this section once our last update is 6 years old.
 
