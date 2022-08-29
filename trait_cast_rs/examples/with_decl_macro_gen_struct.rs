@@ -32,7 +32,7 @@ trait Dog {
 trait Cat<T: Display + ?Sized> {
   fn meow(&self, speak: &T);
 }
-// With the decl_macro you can't (yet) be generic over a T, so we only make `HybridPet<String>` traitcastable
+// With the decl_macro you can't (yet) be generic over a T, so we only make `HybridPet<String>` && `HybridPet<u8>` traitcastable.
 make_trait_castable_decl! {
   HybridPet<String> => (Dog, Cat<str>),
   HybridPet<u8> => (Dog, Cat<u128>),

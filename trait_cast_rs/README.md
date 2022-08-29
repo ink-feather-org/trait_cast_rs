@@ -127,7 +127,7 @@ SAFETY 🏰
 ---------
 
 * The unchecked variants of the `downcast` function all use unsafe - expectedly.
-* The only other use of unsafe is the transmutation of function pointers. However when they are called the are transmuted back to their original type. So this should be `105%` save. ~~As long as `typeid`s don't collide.~~
+* The only other use of unsafe is the transmutation of function pointers. However when they are called they are transmuted back to their original type. So this should be `105%` save. ~~As long as `typeid`s don't collide.~~
 
 Alternatives (~~and why our crate is the best~~)
 --------------------------------------------

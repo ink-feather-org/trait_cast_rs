@@ -16,6 +16,13 @@
         "ptrs",
         "upcasting",
         "downcasting",
-        "casted"
+        "casted",
+        "structs",
+        "struct",
+        "println",
+        "raldone",
+        "onestacked",
+        "mopa",
+        "intertrait"
     ]
 }

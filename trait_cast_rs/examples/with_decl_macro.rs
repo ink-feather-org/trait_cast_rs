@@ -13,7 +13,7 @@ struct HybridPet {
 
 make_trait_castable_decl! {
   HybridPet => (Dog, Cat),
-  // Multiple standalone entries in one macro are possible.
+  // Multiple standalone entries in one macro invocation are possible.
   // HybridAnimal => (Cow, Cat),
   // Sunflower => (Flower, Plant)
 }
