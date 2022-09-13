@@ -1,9 +1,10 @@
 trait_cast_rs
 =========================
 
-[![Rust](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust.yml/badge.svg)](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust.yml)
+[![Rust-CI](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust.yml/badge.svg)](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust.yml)
 [![docs.rs](https://docs.rs/trait_cast_rs/badge.svg)](https://docs.rs/trait_cast_rs)
 [![crates.io](https://img.shields.io/crates/v/trait_cast_rs.svg)](https://crates.io/crates/trait_cast_rs)
+[![rustc](https://img.shields.io/badge/rustc-nightly-lightgrey)](https://doc.rust-lang.org/nightly/std/)
 
 <!-- The rest of this section comes straight from the crate docs from the source. -->
 
@@ -125,9 +126,9 @@ Compile time:
 
 2. Add a `traitcast_targets` function that returns a const slice of (`typeid`, transmuted *casting* function ptr).
 
-Runtime: 
+Runtime:
 
-1. Get targets array 
+1. Get targets array
 2. Find the target `typeid`
 3. Transmute function pointer back to original type
 4. Call the function pointer to get the wanted trait object
@@ -145,7 +146,7 @@ SAFETY 🏰
 Alternatives (~~and why our crate is the best~~)
 --------------------------------------------
 
-This alternatives section is not exhaustive for a more objective/detailed comparison 
+This alternatives section is not exhaustive for a more objective/detailed comparison
 see the alternatives section of [cast_trait_object](https://crates.io/crates/cast_trait_object#Alternatives).
 
 * [mopa](https://crates.io/crates/mopa):
