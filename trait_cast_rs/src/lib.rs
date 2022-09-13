@@ -12,14 +12,11 @@
 )]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 /*!
-
-Requirements
-------------
+## Requirements
 
 This crate requires a nightly compiler.
 
-What can this crate do?
-------------------------
+## What can this crate do?
 
 This crate adds the `TraitcastableAny` replacement trait for `Any`.
 It closely resembles the `Any` trait for downcasting to a concrete type.
@@ -31,8 +28,7 @@ It implements the `TraitcastableAny` trait for your struct, enum or union.
 
 Note: No modifications on the *target* traits is necessary. Which allows you to `downcast` to traits of other libraries you don't control.
 
-Usage
------
+## Usage
 
 1. Add the `trait_cast_rs` crate to your `Cargo.toml` and switch to a nightly compiler.
 
@@ -44,8 +40,7 @@ Usage
 
 4. Enjoy downcasting to trait objects.
 
-Example
--------
+## Example
 
 ```rust
 # #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
@@ -69,8 +64,7 @@ let x: &dyn Print = castable.downcast_ref().unwrap();
 x.print();
 ```
 
-EVEN MORE Examples 🔥
----------------------
+## EVEN MORE Examples 🔥
 
 Check out the [examples](https://github.com/raldone01/trait_cast_rs/tree/main/trait_cast_rs/examples).
 
@@ -79,8 +73,7 @@ check out the `manual*.rs` examples.
 
 There is also a decl marco available - check out the `with_decl_macro*.rs` examples.
 
-Good to know
-------------
+## Good to know
 
 With the `trait_upcasting` feature you can even cast any `&dyn TraitcastableAny` to `&dyn Any`.
 Alternatively you can list the `Any` trait as a traitcast target.
@@ -90,20 +83,17 @@ It makes all `'static` types into `TraitcastableAny`s.
 Even types you don't control.
 However the default implementation of `TraitcastableAny` has no downcast targets.
 
-Premature Optimization
-----------------------
+## Premature Optimization
 
 The order of the parameters for `make_trait_castable` determines the lookup order.
 So you should order them according to the `downcast` frequency.
 With the most frequent traits first.
 
-Authors
--------
+## Authors
 
 [raldone01](https://github.com/raldone01) and [onestacked](https://github.com/chriss0612) are the primary authors and maintainers of this library.
 
-License
--------
+## License
 
 This project is released under either:
 
@@ -119,8 +109,7 @@ submitted for inclusion in the work by you, as defined in the Apache-2.0
 license, shall be dual licensed as above, without any additional terms or
 conditions.
 
-How it works
-------------
+## How it works
 
 I will give you a quick rundown of our *internal* operations: 💦
 
@@ -132,27 +121,25 @@ Compile time:
 
 2. Add a `traitcast_targets` function that returns a const slice of (`typeid`, transmuted *casting* function ptr).
 
-Runtime: 
+Runtime:
 
-1. Get targets array 
+1. Get targets array
 2. Find the target `typeid`
 3. Transmute function pointer back to original type
 4. Call the function pointer to get the wanted trait object
 5. Return it
 6. 💲 Profit 💲
 
-SAFETY 🏰
----------
+## SAFETY 🏰
 
 * The unchecked variants of the `downcast` function all use unsafe - expectedly.
 * The only other use of unsafe is the transmutation of function pointers.
   However when they are called they are transmuted back to their original type.
   So this should be `105%` save. ~~As long as `typeid`s don't collide.~~
 
-Alternatives (~~and why our crate is the best~~)
---------------------------------------------
+## Alternatives (~~and why our crate is the best~~)
 
-This alternatives section is not exhaustive for a more objective/detailed comparison 
+This alternatives section is not exhaustive for a more objective/detailed comparison
 see the alternatives section of [cast_trait_object](https://crates.io/crates/cast_trait_object#Alternatives).
 
 * [mopa](https://crates.io/crates/mopa):
