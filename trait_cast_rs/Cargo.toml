@@ -15,9 +15,10 @@ keywords = ["trait", "cast", "any", "upcast", "rtti"]
 
 [features]
 default = ["alloc"]
-downcast_unchecked = ["trait_cast_impl_rs/downcast_unchecked"]
+downcast_unchecked = []
 alloc = []
 min_specialization = []
+const_cmp_type_id = []
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

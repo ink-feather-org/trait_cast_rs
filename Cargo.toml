@@ -1,3 +1,2 @@
 [workspace]
-
 members = ["trait_cast_impl_rs", "trait_cast_rs"]

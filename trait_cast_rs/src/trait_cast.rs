@@ -60,6 +60,14 @@ impl TraitcastTarget {
   pub const fn target_type_id(&self) -> TypeId {
     self.target_type_id
   }
+
+  #[cfg(feature = "const_cmp_type_id")]
+  pub(crate) const fn cmp_by_target_type_id(a: &Self, b: &Self) -> core::cmp::Ordering {
+    // self.target_type_id.cmp(&other.target_type_id) // FIXME: Once const_cmp_type_id lands.
+    unsafe {
+      mem::transmute::<_, u64>(a.target_type_id).cmp(&mem::transmute::<_, u64>(b.target_type_id))
+    }
+  }
 }
 
 /// A trait marking a type as being potentially able to traitcast from `dyn TraitcastableAny` to another `dyn Trait`.

@@ -11,6 +11,9 @@
   doc_cfg             // For nicer Docs
 )]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
+// #![cfg_attr(feature = "const_cmp_type_id", feature(const_cmp_type_id))] // Needed to impl const cmp for `TraitcastTarget` FIXME: Once const_cmp_type_id lands.
+#![cfg_attr(feature = "const_cmp_type_id", feature(const_cmp))]
+#![cfg_attr(feature = "const_cmp_type_id", feature(const_trait_impl))] // Needed to use the const_sort crate.
 /*!
 ## Requirements
 
