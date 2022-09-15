@@ -3,6 +3,21 @@
 version = 3
 
 [[package]]
+name = "const_closure"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbe0374acf6b2e5d71f6817dbc489c3a92290515177251fa9c8c8f11a7f108e7"
+
+[[package]]
+name = "const_sort_rs"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5f106bf56a4dccf709a972982b2fd06c8984fafc8e4075110e5d8d464a26f906"
+dependencies = [
+ "const_closure",
+]
+
+[[package]]
 name = "proc-macro2"
 version = "1.0.43"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -33,14 +48,15 @@ dependencies = [
 name = "trait_cast_rs"
 version = "0.2.0"
 dependencies = [
+ "const_sort_rs",
  "trait_cast_impl_rs",
 ]
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.3"
+version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c4f5b37a154999a8f3f98cc23a628d850e154479cd94decf3414696e12e31aaf"
+checksum = "dcc811dc4066ac62f84f11307873c4850cb653bfa9b1719cee2bd2204a4bc5dd"
 
 [[package]]
 name = "venial"
