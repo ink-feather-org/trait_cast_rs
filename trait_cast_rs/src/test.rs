@@ -2,6 +2,11 @@ pub use super::*;
 mod test {
   pub use super::*;
 
-  #[test]
-  fn test_wrong_source() {}
+  const fn _test_empty_trait_cast_targets() {
+    struct Woof {}
+
+    make_trait_castable_decl! {
+      Woof => (),
+    }
+  }
 }

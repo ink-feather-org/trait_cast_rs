@@ -68,6 +68,7 @@ trait Cat: TraitcastableAny {
 }
 trait Mouse {}
 
+#[cfg_attr(test, test)]
 fn main() {
   // The box is technically not needed but kept for added realism
   let pet = Box::new(HybridPet {

@@ -33,7 +33,7 @@ trait Dog {
 trait Cat {
   fn meow(&self);
 }
-
+#[cfg_attr(test, test)]
 fn main() {
   // The box is technically not needed but kept for added realism
   let pet = Box::new(HybridPet {

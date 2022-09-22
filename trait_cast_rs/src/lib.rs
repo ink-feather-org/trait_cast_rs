@@ -197,6 +197,7 @@ pub use trait_cast::*;
 
 mod decl;
 
+#[cfg(feature = "const_sort")]
 #[doc(hidden)]
 pub use const_sort_rs::ConstSliceSortExt;
 

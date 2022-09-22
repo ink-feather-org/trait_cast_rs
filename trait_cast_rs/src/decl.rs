@@ -12,7 +12,7 @@
 /// ```
 #[macro_export]
 macro_rules! make_trait_castable_decl {
-  ($($source:ty => ($($target:path),+ $(,)?)),+$(,)?) => {
+  ($($source:ty => ($($target:path),* $(,)?)),+$(,)?) => {
     $(
       $(
         impl $crate::TraitcastableTo<dyn $target> for $source {
@@ -26,15 +26,21 @@ macro_rules! make_trait_castable_decl {
             casted.map(|selv| selv as &mut dyn $target)
           }
         }
-      )+
+      )*
       impl $crate::TraitcastableAny for $source {
         fn traitcast_targets(&self) -> &[$crate::TraitcastTarget] {
-          const TARGETS_LEN: usize = [$($crate::TraitcastTarget::from::<$source, dyn $target>(),)+].len();
+          const TARGETS_LEN: usize = {
+            let a:&[()] = &[$({
+              let _: &dyn $target;
+              ()
+            },)*];
+            a.len()
+          };
           const TARGETS: [$crate::TraitcastTarget; TARGETS_LEN] = {
             let mut targets = [
               $(
                 $crate::TraitcastTarget::from::<$source, dyn $target>(),
-              )+
+              )*
             ];
             $crate::maybe_sort!(targets);
             targets

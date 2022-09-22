@@ -25,7 +25,7 @@ impl Dog for HybridPet {
 trait Dog {
   fn rename(&mut self, new_tag: String);
 }
-
+#[cfg_attr(test, test)]
 fn main() {
   // The box is technically not needed but kept for added realism
   let pet = Box::new(HybridPet {

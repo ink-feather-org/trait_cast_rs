@@ -185,8 +185,12 @@ impl<T: 'static> TraitcastableAny for T {
   default fn traitcast_targets(&self) -> &[TraitcastTarget] {
     &[]
   }
-  default unsafe fn find_traitcast_target(&self, _target: TypeId) -> Option<&TraitcastTarget> {
-    None
+  default unsafe fn find_traitcast_target(&self, target: TypeId) -> Option<&TraitcastTarget> {
+    // Note: copied from above
+    self
+      .traitcast_targets()
+      .iter()
+      .find(|possible| possible.target_type_id == target)
   }
 }
 impl Debug for dyn TraitcastableAny {

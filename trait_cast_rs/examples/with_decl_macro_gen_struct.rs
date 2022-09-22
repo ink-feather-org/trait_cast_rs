@@ -38,6 +38,7 @@ make_trait_castable_decl! {
   HybridPet<String> => (Dog, Cat<str>),
   HybridPet<u8> => (Dog, Cat<u128>),
 }
+#[cfg_attr(test, test)]
 fn main() {
   // The box is technically not needed but kept for added realism
   let pet = Box::new(HybridPet {
