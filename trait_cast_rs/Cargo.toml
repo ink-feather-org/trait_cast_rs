@@ -18,11 +18,10 @@ default = ["alloc"]
 downcast_unchecked = []
 alloc = []
 min_specialization = []
-const_sort = ["const_cmp_type_id"]
-const_cmp_type_id = []
+const_sort = ["dep:const_sort_rs"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 trait_cast_impl_rs = { path = "../trait_cast_impl_rs", version = "0.2.0" }
-const_sort_rs = "0.2.0"
+const_sort_rs = { version = "0.2.1", optional = true }

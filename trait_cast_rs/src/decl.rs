@@ -10,7 +10,6 @@
 ///     SrcStruct2 => (DstTrait3, DstTrait4),
 /// }
 /// ```
-
 #[macro_export]
 macro_rules! make_trait_castable_decl {
   ($($source:ty => ($($target:path),+ $(,)?)),+$(,)?) => {
@@ -18,13 +17,13 @@ macro_rules! make_trait_castable_decl {
       $(
         impl $crate::TraitcastableTo<dyn $target> for $source {
           fn to_dyn_ref(input: &dyn $crate::TraitcastableAny) -> Option<&(dyn $target + 'static)> {
-          let casted: Option<&Self> = input.downcast_ref();
-          casted.map(|selv| selv as &dyn $target)
+            let casted: Option<&Self> = input.downcast_ref();
+            casted.map(|selv| selv as &dyn $target)
           }
 
           fn to_dyn_mut(input: &mut dyn $crate::TraitcastableAny) -> Option<&mut (dyn $target + 'static)> {
-          let casted: Option<&mut Self> = input.downcast_mut();
-          casted.map(|selv| selv as &mut dyn $target)
+            let casted: Option<&mut Self> = input.downcast_mut();
+            casted.map(|selv| selv as &mut dyn $target)
           }
         }
       )+
@@ -81,7 +80,7 @@ macro_rules! maybe_impl_bin_search {
         .const_is_sorted_by(|l, r| Some($crate::TraitcastTarget::cmp_by_target_type_id(l, r))));
 
       targets
-        .binary_search_by(|pos| $crate::TraitcastTarget::cmp_by_target_type_id(pos, &target)) // TODO: fix
+        .binary_search_by(|probe| $crate::cmp_type_id(probe.target_type_id(), target)) // FIXME: once `const_cmp_type_id` lands
         .map(|idx| &targets[idx])
         .ok()
     }

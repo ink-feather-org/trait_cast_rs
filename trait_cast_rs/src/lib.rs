@@ -11,13 +11,11 @@
   doc_cfg             // For nicer Docs
 )]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
-// #![cfg_attr(feature = "const_cmp_type_id", feature(const_cmp_type_id))] // Needed to impl const cmp for `TraitcastTarget` FIXME: Once const_cmp_type_id lands.
-#![cfg_attr(feature = "const_cmp_type_id", feature(const_trait_impl))] // Needed to use the const_sort crate.
-#![cfg_attr(feature = "const_sort", feature(const_cmp))] // FIXME: Remove once `const_cmp_type_id` lands
+#![cfg_attr(feature = "const_sort", feature(const_cmp, const_trait_impl))] // FIXME: Replace `const_cmp` with `const_cmp_type_id` once it lands
 /*!
 ## Requirements
 
-This crate requires a nightly compiler.1
+This crate requires a nightly compiler.
 
 ## What can this crate do?
 
@@ -29,7 +27,7 @@ To make this work you must specify all *target* traits you want to be able to do
 This macro can be applied to structs, enums and unions.
 It implements the `TraitcastableAny` trait for your struct, enum or union.
 
-Note: No modifications on the *target* traits is necessary. Which allows you to `downcast` to traits of other libraries you don't control.
+Note: No modifications on the *target* traits are necessary. Which allows you to downcast to traits of other libraries you don't control.
 
 ## Usage
 
@@ -47,6 +45,7 @@ Note: No modifications on the *target* traits is necessary. Which allows you to 
 
 ```rust
 # #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
+# #![cfg_attr(feature = "const_sort", feature(const_trait_impl, const_mut_refs))]
 use trait_cast_rs::{
   make_trait_castable, TraitcastableAny, TraitcastableAnyInfra, TraitcastableAnyInfraExt,
 };
@@ -71,26 +70,34 @@ x.print();
 
 Check out the [examples](https://github.com/raldone01/trait_cast_rs/tree/main/trait_cast_rs/examples).
 
-If you want to do something the `make_trait_castable` attribute macro can't handle (like implementing for generic structs - pull requests are open)
+If you want to do something the `make_trait_castable` attribute macro can't handle (like implementing for generic structs - pull requests are welcome)
 check out the `manual*.rs` examples.
 
 There is also a decl marco available - check out the `with_decl_macro*.rs` examples.
 
-## Good to know
+## Features
 
-With the `trait_upcasting` feature you can even cast any `&dyn TraitcastableAny` to `&dyn Any`.
+* `alloc` - Adds special implementations for `Box`, `Rc` and `Arc`. Default feature.
+* `const_sort` -
+  Makes the `make_trait_castable` and `make_trait_castable_decl` macros sort the `traitcast_targets` at **compile_time**.
+  When downcasting a `binary_search` is performed. **May** be 🚀 <span style="color: orange; font-weight: bolder">BLAZINGLY</span> 🚀 *faster* for **large** types with lots of downcast targets.
+
+  It additionally requires the following feature flags in the user code:
+  `#![feature(const_trait_impl, const_mut_refs)]`
+* `min_specialization` -
+  Implements `TraitcastableAny` for `'static` types.
+  Even types you don't control.
+  However these default implementations of `TraitcastableAny` have no downcast targets.
+
+  It additionally requires the following feature flags in the user code:
+  `#![feature(min_specialization)]`
+* `downcast_unchecked` - Adds `*_unchecked` variants to the downcast functions.
+
+## Upcasting to the real `Any`
+
+With the `trait_upcasting` rust feature you can even cast any `&dyn TraitcastableAny` to `&dyn Any`.
 Alternatively you can list the `Any` trait as a traitcast target.
-
-Consider enabling the `min_specialization` crate trait.
-It makes all `'static` types into `TraitcastableAny`s.
-Even types you don't control.
-However the default implementation of `TraitcastableAny` has no downcast targets.
-
-## Premature Optimization
-
-The order of the parameters for `make_trait_castable` determines the lookup order.
-So you should order them according to the `downcast` frequency.
-With the most frequent traits first.
+However it is not possible to cast back to `TraitcastableAny` (pull requests are welcome).
 
 ## Authors
 
@@ -138,7 +145,7 @@ Runtime:
 * The unchecked variants of the `downcast` function all use unsafe - expectedly.
 * The only other use of unsafe is the transmutation of function pointers.
   However when they are called they are transmuted back to their original type.
-  So this should be `105%` save. ~~As long as `typeid`s don't collide.~~
+  So this should be `105%` save. ~~As long as `TypeId`s don't collide.~~
 
 ## Alternatives (~~and why our crate is the best~~)
 
@@ -160,11 +167,11 @@ TODO: Remove this section once our last update is 6 years old.
 
 ### Links
 
-[`std::any`](https://doc.rust-lang.org/std/any)
+[`std::any`](https://doc.rust-lang.org/nightly/std/any)
 
-[`std::any::Any`](https://doc.rust-lang.org/std/any/trait.Any.html)
+[`std::any::Any`](https://doc.rust-lang.org/nightly/std/any/trait.Any.html)
 
-[`TypeId`](https://doc.rust-lang.org/std/any/struct.TypeId.html)
+[`TypeId`](https://doc.rust-lang.org/nightly/std/any/struct.TypeId.html)
 
 [`downcast-rs`](https://crates.io/crates/downcast-rs)
 
@@ -173,6 +180,8 @@ TODO: Remove this section once our last update is 6 years old.
 [`traitcast`](https://crates.io/crates/traitcast)
 
 [`traitcast_core`](https://crates.io/crates/traitcast_core)
+
+[`cast_trait_object`](https://crates.io/crates/cast_trait_object)
 
 [`mopa`](https://crates.io/crates/mopa)
 
@@ -187,6 +196,9 @@ mod trait_cast;
 pub use trait_cast::*;
 
 mod decl;
+
+#[doc(hidden)]
+pub use const_sort_rs::ConstSliceSortExt;
 
 pub use trait_cast_impl_rs::make_trait_castable;
 

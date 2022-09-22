@@ -4,15 +4,15 @@ version = 3
 
 [[package]]
 name = "const_closure"
-version = "0.1.1"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbe0374acf6b2e5d71f6817dbc489c3a92290515177251fa9c8c8f11a7f108e7"
+checksum = "729a60c5aae63b198768267d15e07c8e41edfa21eb2e8e8c9d367c3b3a6d87c9"
 
 [[package]]
 name = "const_sort_rs"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f106bf56a4dccf709a972982b2fd06c8984fafc8e4075110e5d8d464a26f906"
+checksum = "101826ecbf5f5b4edd27aa59343c37e147f0efb0dacf55dcec03f5d76760a79e"
 dependencies = [
  "const_closure",
 ]
