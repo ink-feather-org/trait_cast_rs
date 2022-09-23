@@ -80,7 +80,7 @@ There is also a decl marco available - check out the `with_decl_macro*.rs` examp
 * `alloc` - Adds special implementations for `Box`, `Rc` and `Arc`. Default feature.
 * `const_sort` -
   Makes the `make_trait_castable` and `make_trait_castable_decl` macros sort the `traitcast_targets` at **compile_time**.
-  When downcasting a `binary_search` is performed. **May** be 🚀 <span style="color: orange; font-weight: bolder">BLAZINGLY</span> 🚀 *faster* for **large** types with lots of downcast targets.
+  When downcasting a `binary_search` is performed. **May** be 🚀 <span style="color: orange; font-weight: bolder">BLAZINGLY</span> 🚀 *faster* for types with **lots** of downcast targets.
 
   It additionally requires the following feature flags in the user code:
   `#![feature(const_trait_impl, const_mut_refs)]`
