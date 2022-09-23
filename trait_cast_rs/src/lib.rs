@@ -1,6 +1,7 @@
 #![no_std]
 #![deny(missing_docs)]
 #![warn(clippy::undocumented_unsafe_blocks, clippy::pedantic, clippy::nursery)]
+#![allow(clippy::doc_markdown)]
 #![allow(incomplete_features)]
 #![feature(
   const_type_id,      // Needed to enable `TraitcastTarget::create` to be const
@@ -12,6 +13,7 @@
 )]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 #![cfg_attr(feature = "const_sort", feature(const_cmp, const_trait_impl))] // FIXME: Replace `const_cmp` with `const_cmp_type_id` once it lands
+
 /*!
 ## Requirements
 

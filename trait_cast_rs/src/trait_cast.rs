@@ -25,7 +25,10 @@ pub trait TraitcastableTo<Target: 'static + ?Sized>: TraitcastableAny {
 // FIXME: Remove once `const_cmp_type_id` lands
 #[cfg(feature = "const_sort")]
 #[doc(hidden)]
+#[must_use]
 pub const fn cmp_type_id(a: TypeId, b: TypeId) -> core::cmp::Ordering {
+  // SAFETY: This is fine as long as the compiler internally uses `u64`.
+  //         However, one must not store the ordering between compilations.
   unsafe { mem::transmute::<_, u64>(a).cmp(&mem::transmute::<_, u64>(b)) }
 }
 
@@ -64,6 +67,7 @@ impl TraitcastTarget {
     Self::from_fn_ptrs(Src::to_dyn_ref, Src::to_dyn_mut)
   }
   /// Returns the type_id of the type to which can be cast with this instance.
+  #[must_use]
   pub const fn target_type_id(&self) -> TypeId {
     self.target_type_id
   }
@@ -71,11 +75,10 @@ impl TraitcastTarget {
   // FIXME: Remove once `const_cmp_type_id` lands
   #[cfg(feature = "const_sort")]
   #[doc(hidden)]
+  #[must_use]
   pub const fn cmp_by_target_type_id(a: &Self, b: &Self) -> core::cmp::Ordering {
     // self.target_type_id.cmp(&other.target_type_id) // FIXME: Once const_cmp_type_id lands.
-    unsafe {
-      mem::transmute::<_, u64>(a.target_type_id).cmp(&mem::transmute::<_, u64>(b.target_type_id))
-    }
+    cmp_type_id(a.target_type_id, b.target_type_id)
   }
 }
 
@@ -101,7 +104,7 @@ pub trait TraitcastableAny: Any {
   /// * `Vec<TraitcastTarget>` sorted by the `TypeId` and performing a binary search on it.
   /// * HashMap
   ///
-  /// # SAFETY
+  /// # Safety
   /// This function is unsafe because returning a wrong `TraitcastTarget` is unsound.
   // TODO? Add debug asserts after every call to this function to check if the returned `TraitcastTarget` is valid?
   unsafe fn find_traitcast_target(&self, target: TypeId) -> Option<&TraitcastTarget> {
@@ -286,7 +289,7 @@ impl<Src: TraitcastableAnyInfra<Target> + ?Sized, Target: ?Sized + 'static>
   type Output = Box<Target>;
 
   default fn downcast(self) -> Result<Self::Output, Self> {
-    let raw = Box::into_raw(self);
+    let raw = Self::into_raw(self);
     // SAFETY:
     // We can cast the *mut to a &mut since we never use the pointer directly in the success case
     //  and the reference isn't passed to the failure case.
@@ -298,12 +301,12 @@ impl<Src: TraitcastableAnyInfra<Target> + ?Sized, Target: ?Sized + 'static>
     } else {
       // SAFETY:
       // We reconstruct the previously destructed `Box`.
-      Err(unsafe { Box::from_raw(raw) })
+      Err(unsafe { Self::from_raw(raw) })
     }
   }
   #[cfg(feature = "downcast_unchecked")]
   default unsafe fn downcast_unchecked(self) -> Self::Output {
-    <Box<Src> as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
+    <Self as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
   }
 }
 
@@ -341,7 +344,7 @@ impl<Src: TraitcastableAnyInfra<Target> + ?Sized, Target: ?Sized + 'static>
   type Output = Rc<Target>;
 
   default fn downcast(self) -> Result<Self::Output, Self> {
-    let raw = Rc::into_raw(self);
+    let raw = Self::into_raw(self);
     // SAFETY:
     // We can cast the *mut to a &mut since we never use the pointer directly in the success case
     //  and the reference isn't passed to the failure case.
@@ -353,12 +356,12 @@ impl<Src: TraitcastableAnyInfra<Target> + ?Sized, Target: ?Sized + 'static>
     } else {
       // SAFETY:
       // We reconstruct the previously destructed `Rc`.
-      Err(unsafe { Rc::from_raw(raw) })
+      Err(unsafe { Self::from_raw(raw) })
     }
   }
   #[cfg(feature = "downcast_unchecked")]
   default unsafe fn downcast_unchecked(self) -> Self::Output {
-    <Rc<Src> as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
+    <Self as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
   }
 }
 
@@ -398,7 +401,7 @@ impl<
   type Output = Arc<Target>;
 
   default fn downcast(self) -> Result<Self::Output, Self> {
-    let raw = Arc::into_raw(self);
+    let raw = Self::into_raw(self);
     // SAFETY:
     // We can cast the *mut to a &mut since we never use the pointer directly in the success case
     //  and the reference isn't passed to the failure case.
@@ -410,12 +413,12 @@ impl<
     } else {
       // SAFETY:
       // We reconstruct the previously destructed `Arc`.
-      Err(unsafe { Arc::from_raw(raw) })
+      Err(unsafe { Self::from_raw(raw) })
     }
   }
   #[cfg(feature = "downcast_unchecked")]
   default unsafe fn downcast_unchecked(self) -> Self::Output {
-    <Arc<Src> as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
+    <Self as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
   }
 }
 

@@ -36,7 +36,7 @@ impl TraitcastableTo<dyn Cat> for HybridPet {
 
 impl TraitcastableAny for HybridPet {
   fn traitcast_targets(&self) -> &[TraitcastTarget] {
-    const TARGETS: &'static [TraitcastTarget] = &[
+    const TARGETS: &[TraitcastTarget] = &[
       TraitcastTarget::from::<HybridPet, dyn Dog>(),
       TraitcastTarget::from::<HybridPet, dyn Cat>(),
     ];
