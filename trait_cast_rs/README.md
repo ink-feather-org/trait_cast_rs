@@ -1,6 +1,7 @@
 # trait_cast_rs
 
-[![Rust-CI](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust.yml/badge.svg)](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust.yml)
+[![Daily-Nightly](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust_daily_nightly_check.yml/badge.svg)](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust_daily_nightly_check.yml)
+[![Rust-Main-CI](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust_main.yml/badge.svg)](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust_main.yml)
 [![docs.rs](https://docs.rs/trait_cast_rs/badge.svg)](https://docs.rs/trait_cast_rs)
 [![crates.io](https://img.shields.io/crates/v/trait_cast_rs.svg)](https://crates.io/crates/trait_cast_rs)
 [![rustc](https://img.shields.io/badge/rustc-nightly-lightgrey)](https://doc.rust-lang.org/nightly/std/)

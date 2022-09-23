@@ -24,6 +24,7 @@
         "onestacked",
         "mopa",
         "intertrait",
-        "rustc"
+        "rustc",
+        "clippy"
     ]
 }
