@@ -29,6 +29,7 @@ macro_rules! make_trait_castable_decl {
       )*
       impl $crate::TraitcastableAny for $source {
         fn traitcast_targets(&self) -> &[$crate::TraitcastTarget] {
+          #[allow(clippy::unused_unit)]
           const TARGETS_LEN: usize = {
             let a:&[()] = &[$({
               let _: &dyn $target;

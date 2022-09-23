@@ -1,7 +1,7 @@
 #![no_std]
 #![deny(missing_docs)]
 #![warn(clippy::undocumented_unsafe_blocks, clippy::pedantic, clippy::nursery)]
-#![allow(clippy::doc_markdown)]
+#![allow(clippy::doc_markdown, clippy::option_if_let_else)]
 #![allow(incomplete_features)]
 #![feature(
   const_type_id,      // Needed to enable `TraitcastTarget::create` to be const
@@ -197,7 +197,7 @@ extern crate alloc;
 mod trait_cast;
 pub use trait_cast::*;
 
-mod decl;
+mod decl_macro;
 
 #[cfg(feature = "const_sort")]
 #[doc(hidden)]
