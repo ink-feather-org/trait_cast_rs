@@ -38,6 +38,7 @@ macro_rules! make_trait_castable_decl {
             a.len()
           };
           const TARGETS: [$crate::TraitcastTarget; TARGETS_LEN] = {
+            #[allow(unused_mut)]
             let mut targets = [
               $(
                 $crate::TraitcastTarget::from::<$source, dyn $target>(),
