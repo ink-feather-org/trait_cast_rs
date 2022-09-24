@@ -38,7 +38,5 @@ Neither proc-macro nor decl-macro support this.
 
 It allows you to optimize the performance by implementing `find_traitcast_target` yourself.
 
-TODO: It would be ideal to sort the targets array at compile time and then do a binary search for the correct target. This however is not yet implemented.
-
 * [`manual`](manual.rs): Simplest manual implementation.
 * [`manual_gen_struct`](manual_gen_struct.rs): Shows how to support generic implementations for structs/enums/unions.
