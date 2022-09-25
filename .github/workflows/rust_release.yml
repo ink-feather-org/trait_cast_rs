@@ -21,7 +21,7 @@ jobs:
     secrets: inherit
   create-release:
     needs: call_rust_validation
-    if: github.repository_owner == 'raldone01'
+    if: github.repository_owner == 'ink-feather-org'
     runs-on: ubuntu-latest
 
     steps:

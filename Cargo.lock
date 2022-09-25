@@ -4,15 +4,15 @@ version = 3
 
 [[package]]
 name = "const_closure"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "729a60c5aae63b198768267d15e07c8e41edfa21eb2e8e8c9d367c3b3a6d87c9"
+checksum = "dcffe198bc7cf91c213e3811daa17c1e22dbee68a4a943bd817dc869985f5ee5"
 
 [[package]]
 name = "const_sort_rs"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "410612031c41ab8e10beec560acfa9c25dacfda7218e9b9793a33502e6c636a2"
+checksum = "77764070fa1c368ad21a22fc00f4db2173678fc1087cb38bb28c2061c0c629f2"
 dependencies = [
  "const_closure",
 ]
@@ -37,7 +37,7 @@ dependencies = [
 
 [[package]]
 name = "trait_cast_impl_rs"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -46,7 +46,7 @@ dependencies = [
 
 [[package]]
 name = "trait_cast_rs"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "const_sort_rs",
  "trait_cast_impl_rs",

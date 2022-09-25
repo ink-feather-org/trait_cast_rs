@@ -1,7 +1,7 @@
 # trait_cast_rs
 
-[![Daily-Nightly](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust_daily_nightly_check.yml/badge.svg)](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust_daily_nightly_check.yml)
-[![Rust-Main-CI](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust_main.yml/badge.svg)](https://github.com/raldone01/trait_cast_rs/actions/workflows/rust_main.yml)
+[![Daily-Nightly](https://github.com/ink-feather-org/trait_cast_rs/actions/workflows/rust_daily_nightly_check.yml/badge.svg)](https://github.com/ink-feather-org/trait_cast_rs/actions/workflows/rust_daily_nightly_check.yml)
+[![Rust-Main-CI](https://github.com/ink-feather-org/trait_cast_rs/actions/workflows/rust_main.yml/badge.svg)](https://github.com/ink-feather-org/trait_cast_rs/actions/workflows/rust_main.yml)
 [![docs.rs](https://docs.rs/trait_cast_rs/badge.svg)](https://docs.rs/trait_cast_rs)
 [![crates.io](https://img.shields.io/crates/v/trait_cast_rs.svg)](https://crates.io/crates/trait_cast_rs)
 [![rustc](https://img.shields.io/badge/rustc-nightly-lightgrey)](https://doc.rust-lang.org/nightly/std/)
@@ -61,7 +61,7 @@ x.print();
 
 ## EVEN MORE Examples 🔥
 
-Check out the [examples](https://github.com/raldone01/trait_cast_rs/tree/main/trait_cast_rs/examples).
+Check out the [examples](https://github.com/ink-feather-org/trait_cast_rs/tree/main/trait_cast_rs/examples).
 
 If you want to do something the `make_trait_castable` attribute macro can't handle (like implementing for generic structs - pull requests are welcome)
 check out the `manual*.rs` examples.
@@ -100,8 +100,8 @@ However it is not possible to cast back to `TraitcastableAny` (pull requests are
 
 This project is released under either:
 
-- [MIT License](https://github.com/raldone01/trait_cast_rs/blob/main/LICENSE-MIT)
-- [Apache License (Version 2.0)](https://github.com/raldone01/trait_cast_rs/blob/main/LICENSE-APACHE)
+- [MIT License](https://github.com/ink-feather-org/trait_cast_rs/blob/main/LICENSE-MIT)
+- [Apache License (Version 2.0)](https://github.com/ink-feather-org/trait_cast_rs/blob/main/LICENSE-APACHE)
 
 at your choosing.
 

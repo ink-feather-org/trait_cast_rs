@@ -70,7 +70,7 @@ x.print();
 
 ## EVEN MORE Examples 🔥
 
-Check out the [examples](https://github.com/raldone01/trait_cast_rs/tree/main/trait_cast_rs/examples).
+Check out the [examples](https://github.com/ink-feather-org/trait_cast_rs/tree/main/trait_cast_rs/examples).
 
 If you want to do something the `make_trait_castable` attribute macro can't handle (like implementing for generic structs - pull requests are welcome)
 check out the `manual*.rs` examples.
@@ -109,8 +109,8 @@ However it is not possible to cast back to `TraitcastableAny` (pull requests are
 
 This project is released under either:
 
-- [MIT License](https://github.com/raldone01/trait_cast_rs/blob/main/LICENSE-MIT)
-- [Apache License (Version 2.0)](https://github.com/raldone01/trait_cast_rs/blob/main/LICENSE-APACHE)
+- [MIT License](https://github.com/ink-feather-org/trait_cast_rs/blob/main/LICENSE-MIT)
+- [Apache License (Version 2.0)](https://github.com/ink-feather-org/trait_cast_rs/blob/main/LICENSE-APACHE)
 
 at your choosing.
 
