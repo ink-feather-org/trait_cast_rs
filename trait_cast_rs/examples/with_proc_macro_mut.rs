@@ -17,7 +17,7 @@ impl HybridPet {
 
 impl Dog for HybridPet {
   fn rename(&mut self, new_name: String) {
-    println!("Changing name from \"{}\" to \"{}\"", self.name, new_name);
+    println!("Changing name from \"{}\" to \"{new_name}\"", self.name);
     self.name = new_name;
   }
 }

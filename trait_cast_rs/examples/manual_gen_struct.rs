@@ -20,7 +20,7 @@ impl<T: Display> Dog for HybridPet<T> {
 }
 impl<V: Display + ?Sized, T: Display> Cat<V> for HybridPet<T> {
   fn meow(&self, speak: &V) {
-    println!("{}: Meow! {}", self.name, speak);
+    println!("{}: Meow! {speak}", self.name);
   }
 }
 
