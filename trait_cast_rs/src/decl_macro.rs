@@ -39,7 +39,7 @@ macro_rules! make_trait_castable_decl {
           };
           const TARGETS: [$crate::TraitcastTarget; TARGETS_LEN] = {
             #[allow(unused_mut)]
-            let mut targets = [
+            let mut targets : [$crate::TraitcastTarget; TARGETS_LEN] = [
               $(
                 $crate::TraitcastTarget::from::<$source, dyn $target>(),
               )*
@@ -61,8 +61,7 @@ macro_rules! make_trait_castable_decl {
 macro_rules! maybe_sort {
   ($targets:ident) => {{
     use const_sort_rs::ConstSliceSortExt;
-    //$targets.const_sort_unstable_by_key($crate::TraitcastTarget::target_type_id); // FIXME: once `const_cmp_type_id` lands
-    $targets.const_sort_unstable_by($crate::TraitcastTarget::cmp_by_target_type_id);
+    $targets.const_sort_unstable_by_key($crate::TraitcastTarget::target_type_id);
   }};
 }
 
@@ -84,11 +83,12 @@ macro_rules! maybe_impl_bin_search {
     ) -> Option<&$crate::TraitcastTarget> {
       use ::const_sort_rs::ConstSliceSortExt;
       let targets = self.traitcast_targets();
-      debug_assert!(targets
-        .const_is_sorted_by(|l, r| Some($crate::TraitcastTarget::cmp_by_target_type_id(l, r))));
+      debug_assert!(
+        targets.const_is_sorted_by(|l, r| l.target_type_id().partial_cmp(&r.target_type_id()))
+      );
 
       targets
-        .binary_search_by(|probe| $crate::cmp_type_id(probe.target_type_id(), target)) // FIXME: once `const_cmp_type_id` lands
+        .binary_search_by_key(&target, $crate::TraitcastTarget::target_type_id)
         .map(|idx| &targets[idx])
         .ok()
     }

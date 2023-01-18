@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Use [const Ordering for TypeId](https://github.com/rust-lang/rust/pull/101698) to make a lot of code cleanups
+
 ## [0.2.4] - 2022-11-10
 
 ### Fixes

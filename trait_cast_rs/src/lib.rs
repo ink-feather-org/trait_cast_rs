@@ -12,7 +12,7 @@
   doc_cfg             // For nicer Docs
 )]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
-#![cfg_attr(feature = "const_sort", feature(const_cmp, const_trait_impl))] // FIXME: Replace `const_cmp` with `const_cmp_type_id` once it lands
+#![cfg_attr(feature = "const_sort", feature(const_trait_impl))]
 
 /*!
 ## Requirements

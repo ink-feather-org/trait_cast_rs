@@ -1,7 +1,6 @@
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 #![cfg_attr(feature = "const_sort", feature(const_trait_impl, const_mut_refs))]
-#![cfg_attr(feature = "const_sort", feature(const_cmp))] // FIXME: Replace with `const_cmp_type_id` once it lands.
 
 use trait_cast_rs::{make_trait_castable, TraitcastableAny, TraitcastableAnyInfra};
 
