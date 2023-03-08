@@ -1,7 +1,8 @@
 use core::{
   any::{type_name, Any, TypeId},
   fmt::{self, Debug, Formatter},
-  mem,
+  mem, ptr,
+  ptr::DynMetadata,
 };
 
 #[cfg(feature = "alloc")]
@@ -12,14 +13,8 @@ use alloc::{boxed::Box, rc::Rc, sync::Arc};
 ///
 /// This trait is not object save.
 pub trait TraitcastableTo<Target: 'static + ?Sized>: TraitcastableAny {
-  /// Casts the input to the desired trait object if possible.
-  ///
-  /// How it works:
-  /// * Try to downcast input to Self -> On failure return `None`.
-  /// * Upcast to the desired trait object -> Return the trait object.
-  fn to_dyn_ref(input: &dyn TraitcastableAny) -> Option<&Target>;
-  /// Same as the `to_dyn_ref` function except with mutable references.
-  fn to_dyn_mut(input: &mut dyn TraitcastableAny) -> Option<&mut Target>;
+  /// The metadata that is required to for the cast
+  const METADATA: DynMetadata<Target>;
 }
 
 /// A struct representing the transformation from `dyn TraitcastableAny` to another `dyn Trait`.
@@ -28,33 +23,19 @@ pub trait TraitcastableTo<Target: 'static + ?Sized>: TraitcastableAny {
 pub struct TraitcastTarget {
   target_type_id: TypeId,
   target_type_name: &'static str,
-  to_dyn_ref: fn(&dyn TraitcastableAny) -> *const (),
-  to_dyn_mut: fn(&mut dyn TraitcastableAny) -> *mut (),
+  metadata: &'static DynMetadata<dyn TraitcastableAny>,
 }
 impl TraitcastTarget {
-  /// Creates a `TraitcastTarget` from two function pointers.
-  ///
-  /// This is safe since we know that the function pointers have the correct signature.
-  ///
-  /// As a side effect of this the user also doesn't have to use the `const_type_id` feature flag.
-  const fn from_fn_ptrs<Target: 'static + ?Sized>(
-    to_dyn_ref: fn(&dyn TraitcastableAny) -> Option<&Target>,
-    to_dyn_mut: fn(&mut dyn TraitcastableAny) -> Option<&mut Target>,
-  ) -> Self {
+  /// Creates a `TraitcastTarget` from a `TraitcastableTo` implementation.
+  #[must_use]
+  pub const fn from<Src: TraitcastableTo<Target>, Target: 'static + ?Sized>() -> Self {
     Self {
       target_type_id: TypeId::of::<Target>(),
       target_type_name: type_name::<Target>(),
       // SAFETY:
       // We will transmute the return type back to the original type before we call the function.
-      to_dyn_ref: unsafe { mem::transmute(to_dyn_ref) },
-      // SAFETY:
-      // We will transmute the return type back to the original type before we call the function.
-      to_dyn_mut: unsafe { mem::transmute(to_dyn_mut) },
+      metadata: unsafe { mem::transmute(&Src::METADATA) },
     }
-  }
-  /// Creates a `TraitcastTarget` from a `TraitcastableTo` implementation.
-  pub const fn from<Src: TraitcastableTo<Target>, Target: 'static + ?Sized>() -> Self {
-    Self::from_fn_ptrs(Src::to_dyn_ref, Src::to_dyn_mut)
   }
   /// Returns the type_id of the type to which can be cast with this instance.
   #[must_use]
@@ -203,16 +184,18 @@ macro_rules! implement_with_markers {
 
       default fn downcast_ref(&self) -> Option<&Target> {
         // SAFETY: The default implementation is sound. Only user implementations can cause unsoundness.
-        unsafe { self.find_traitcast_target(TypeId::of::<Target>()) }
-          .and_then(|target| {
-            let fn_ptr: fn(&dyn TraitcastableAny) -> Option<&Target> =
+        let metadata = unsafe { Self::find_traitcast_target(self, TypeId::of::<Target>()) }.map(|target| unsafe {*((target.metadata as *const DynMetadata<dyn TraitcastableAny>).cast::<<Target as ::core::ptr::Pointee>::Metadata>())});
+
+        let raw_ptr = (self as *const Self).to_raw_parts().0;
+
+        metadata.map(|metadata| {
+          let ret_ptr: *const Target = ptr::from_raw_parts(raw_ptr, metadata);
+
             // SAFETY:
-            // The actual type of the function was always:
-            //  `fn(&dyn TraitcastableAny) -> Option<&Target>`
-            // We had just previously thrown away the type of the return value.
-            unsafe { mem::transmute(target.to_dyn_ref) };
-            fn_ptr(self)
-          })
+            // we turned this into a raw pointer before and changed the metadata to that of a dyn Trait
+            //  where the Trait must be implemented, so this must be safe!
+          unsafe {&*ret_ptr}
+        })
       }
       #[cfg(feature = "downcast_unchecked")]
       default unsafe fn downcast_ref_unchecked(&self) -> &Target {
@@ -221,16 +204,19 @@ macro_rules! implement_with_markers {
 
       default fn downcast_mut(&mut self) -> Option<&mut Target> {
         // SAFETY: The default implementation is sound. Only user implementations can cause unsoundness.
-        let raw_fn_ptr = unsafe { Self::find_traitcast_target(self, TypeId::of::<Target>()) }.map(|target| target.to_dyn_mut);
-        raw_fn_ptr.and_then(|raw_fn_ptr| {
-            let fn_ptr: fn(&mut dyn TraitcastableAny) -> Option<&mut Target> =
+        let metadata = unsafe { Self::find_traitcast_target(self, TypeId::of::<Target>()) }.map(|target| unsafe {*((target.metadata as *const DynMetadata<dyn TraitcastableAny>).cast::<<Target as ::core::ptr::Pointee>::Metadata>())});
+
+        let raw_ptr = (self as *mut Self).to_raw_parts().0;
+
+        metadata.map(|metadata| {
+          let ret_ptr: *mut Target = ptr::from_raw_parts_mut(raw_ptr, metadata);
+
             // SAFETY:
-            // The actual type of the function was always:
-            //  `fn(&mut dyn TraitcastableAny) -> Option<&mut Target>`
-            // We had just previously thrown away the type of the return value.
-              unsafe { mem::transmute(raw_fn_ptr) };
-            fn_ptr(self)
-          })
+            // we turned this into a raw pointer before and changed the metadata to that of a dyn Trait
+            //  where the Trait must be implemented, so this must be safe!
+          unsafe {&mut *ret_ptr}
+        })
+
       }
       #[cfg(feature = "downcast_unchecked")]
       default unsafe fn downcast_mut_unchecked(&mut self) -> &mut Target {

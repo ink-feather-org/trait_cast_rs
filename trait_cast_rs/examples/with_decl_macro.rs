@@ -3,6 +3,7 @@
 #![cfg_attr(feature = "const_sort", feature(const_trait_impl, const_mut_refs))]
 #![feature(trait_upcasting)]
 #![allow(incomplete_features)]
+#![feature(ptr_metadata)]
 
 use std::any::Any;
 

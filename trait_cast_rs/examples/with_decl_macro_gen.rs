@@ -1,6 +1,7 @@
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 #![cfg_attr(feature = "const_sort", feature(const_trait_impl, const_mut_refs))]
+#![feature(ptr_metadata)]
 
 use std::any::type_name;
 

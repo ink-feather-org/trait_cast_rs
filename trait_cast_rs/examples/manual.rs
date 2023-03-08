@@ -1,6 +1,7 @@
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![feature(trait_upcasting)]
 #![allow(incomplete_features)]
+#![feature(ptr_metadata)]
 
 use trait_cast_rs::{
   TraitcastTarget, TraitcastableAny, TraitcastableAnyInfra, TraitcastableAnyInfraExt,
@@ -11,27 +12,21 @@ struct HybridPet {
   name: String,
 }
 impl TraitcastableTo<dyn Dog> for HybridPet {
-  fn to_dyn_ref(input: &dyn TraitcastableAny) -> Option<&(dyn Dog + 'static)> {
-    let casted: Option<&Self> = input.downcast_ref();
-    casted.map(|selv| selv as &dyn Dog)
-  }
+  const METADATA: ::core::ptr::DynMetadata<dyn Dog> = {
+    let ptr: *const HybridPet = ::core::ptr::from_raw_parts(::core::ptr::null(), ());
+    let ptr: *const dyn Dog = ptr as _;
 
-  fn to_dyn_mut(input: &mut dyn TraitcastableAny) -> Option<&mut (dyn Dog + 'static)> {
-    let casted: Option<&mut Self> = input.downcast_mut();
-    casted.map(|selv| selv as &mut dyn Dog)
-  }
+    ptr.to_raw_parts().1
+  };
 }
 
 impl TraitcastableTo<dyn Cat> for HybridPet {
-  fn to_dyn_ref(input: &dyn TraitcastableAny) -> Option<&dyn Cat> {
-    let casted: Option<&Self> = input.downcast_ref();
-    casted.map(|selv| selv as &dyn Cat)
-  }
+  const METADATA: ::core::ptr::DynMetadata<dyn Cat> = {
+    let ptr: *const HybridPet = ::core::ptr::from_raw_parts(::core::ptr::null(), ());
+    let ptr: *const dyn Cat = ptr as _;
 
-  fn to_dyn_mut(input: &mut dyn TraitcastableAny) -> Option<&mut dyn Cat> {
-    let casted: Option<&mut Self> = input.downcast_mut();
-    casted.map(|selv| selv as &mut dyn Cat)
-  }
+    ptr.to_raw_parts().1
+  };
 }
 
 impl TraitcastableAny for HybridPet {

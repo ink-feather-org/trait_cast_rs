@@ -1,4 +1,5 @@
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
+#![feature(ptr_metadata)]
 
 use std::{any::type_name, fmt::Display};
 
@@ -33,29 +34,23 @@ trait Cat<T: Display + ?Sized> {
 }
 
 impl<T: Display + 'static> TraitcastableTo<dyn Dog> for HybridPet<T> {
-  fn to_dyn_ref(input: &dyn TraitcastableAny) -> Option<&(dyn Dog + 'static)> {
-    let casted: Option<&Self> = input.downcast_ref();
-    casted.map(|selv| selv as &dyn Dog)
-  }
+  const METADATA: ::core::ptr::DynMetadata<dyn Dog> = {
+    let ptr: *const HybridPet<T> = ::core::ptr::from_raw_parts(::core::ptr::null(), ());
+    let ptr: *const dyn Dog = ptr as _;
 
-  fn to_dyn_mut(input: &mut dyn TraitcastableAny) -> Option<&mut (dyn Dog + 'static)> {
-    let casted: Option<&mut Self> = input.downcast_mut();
-    casted.map(|selv| selv as &mut dyn Dog)
-  }
+    ptr.to_raw_parts().1
+  };
 }
 
 impl<T: Display + 'static, V: Display + 'static + ?Sized> TraitcastableTo<dyn Cat<V>>
   for HybridPet<T>
 {
-  fn to_dyn_ref(input: &dyn TraitcastableAny) -> Option<&(dyn Cat<V> + 'static)> {
-    let casted: Option<&Self> = input.downcast_ref();
-    casted.map(|selv| selv as &dyn Cat<V>)
-  }
+  const METADATA: ::core::ptr::DynMetadata<dyn Cat<V>> = {
+    let ptr: *const HybridPet<T> = ::core::ptr::from_raw_parts(::core::ptr::null(), ());
+    let ptr: *const dyn Cat<V> = ptr as _;
 
-  fn to_dyn_mut(input: &mut dyn TraitcastableAny) -> Option<&mut (dyn Cat<V> + 'static)> {
-    let casted: Option<&mut Self> = input.downcast_mut();
-    casted.map(|selv| selv as &mut dyn Cat<V>)
-  }
+    ptr.to_raw_parts().1
+  };
 }
 
 // The `TARGETS` slice can not be declared inside the `traitcast_targets` function.

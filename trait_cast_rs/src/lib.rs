@@ -11,6 +11,7 @@
   min_specialization, // Needed to unify the interface between downcast and traitcast (could be avoided with !Trait bounds or trait generics)
   doc_cfg             // For nicer Docs
 )]
+#![feature(ptr_metadata)]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 #![cfg_attr(feature = "const_sort", feature(const_trait_impl))]
 
@@ -48,6 +49,7 @@ Note: No modifications on the *target* traits are necessary. Which allows you to
 ```rust
 # #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 # #![cfg_attr(feature = "const_sort", feature(const_trait_impl, const_mut_refs))]
+# #![feature(ptr_metadata)]
 use trait_cast_rs::{
   make_trait_castable, TraitcastableAny, TraitcastableAnyInfra, TraitcastableAnyInfraExt,
 };

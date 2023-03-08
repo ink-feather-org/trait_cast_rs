@@ -16,15 +16,12 @@ macro_rules! make_trait_castable_decl {
     $(
       $(
         impl $crate::TraitcastableTo<dyn $target> for $source {
-          fn to_dyn_ref(input: &dyn $crate::TraitcastableAny) -> Option<&(dyn $target + 'static)> {
-            let casted: Option<&Self> = input.downcast_ref();
-            casted.map(|selv| selv as &dyn $target)
-          }
+          const METADATA: ::core::ptr::DynMetadata<dyn $target> = {
+            let ptr: *const $source = ::core::ptr::from_raw_parts(::core::ptr::null(), ());
+            let ptr: *const dyn $target = ptr as _;
 
-          fn to_dyn_mut(input: &mut dyn $crate::TraitcastableAny) -> Option<&mut (dyn $target + 'static)> {
-            let casted: Option<&mut Self> = input.downcast_mut();
-            casted.map(|selv| selv as &mut dyn $target)
-          }
+            ptr.to_raw_parts().1
+          };
         }
       )*
       impl $crate::TraitcastableAny for $source {
