@@ -29,7 +29,7 @@ impl TraitcastableTo<dyn Cat> for HybridPet {
   };
 }
 
-impl TraitcastableAny for HybridPet {
+unsafe impl TraitcastableAny for HybridPet {
   fn traitcast_targets(&self) -> &[TraitcastTarget] {
     const TARGETS: &[TraitcastTarget] = &[
       TraitcastTarget::from::<HybridPet, dyn Dog>(),
