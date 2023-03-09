@@ -62,7 +62,7 @@ impl<T: Display + 'static> HybridPet<T> {
   ];
 }
 
-impl<T: Display + 'static> TraitcastableAny for HybridPet<T> {
+unsafe impl<T: Display + 'static> TraitcastableAny for HybridPet<T> {
   fn traitcast_targets(&self) -> &[TraitcastTarget] {
     Self::TARGETS
   }
