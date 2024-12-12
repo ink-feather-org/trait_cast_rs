@@ -3,8 +3,13 @@ resolver = "2"
 members = ["trait_cast_impl_rs", "trait_cast_rs"]
 
 [workspace.lints.clippy]
-pedantic = "warn"
+needless_lifetimes = "allow"
+option_if_let_else = "allow"
+# see: https://github.com/bevyengine/bevy/pull/15375#issuecomment-2366966219
+too_long_first_doc_paragraph = "allow"
+
 nursery = "warn"
+pedantic = "warn"
 doc_markdown = "warn"
 manual_let_else = "warn"
 match_same_arms = "warn"
@@ -14,15 +19,10 @@ semicolon_if_nothing_returned = "warn"
 type_complexity = "allow"
 undocumented_unsafe_blocks = "warn"
 unwrap_or_default = "warn"
-needless_lifetimes = "allow"
-option_if_let_else = "allow"
 
 ptr_as_ptr = "warn"
 ptr_cast_constness = "warn"
 ref_as_ptr = "warn"
-
-# see: https://github.com/bevyengine/bevy/pull/15375#issuecomment-2366966219
-too_long_first_doc_paragraph = "allow"
 
 std_instead_of_core = "warn"
 std_instead_of_alloc = "warn"
@@ -41,7 +41,7 @@ ellipsis-inclusive-range-patterns = "warn"
 non-fmt-panics = "warn"
 explicit-outlives-requirements = "warn"
 unused-extern-crates = "warn"
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(docsrs_dep)'] }
+unexpected_cfgs = { level = "warn" }
 unsafe_code = "deny"
 unsafe_op_in_unsafe_fn = "warn"
 unused_qualifications = "warn"

@@ -13,8 +13,6 @@ repository = "https://github.com/raldone01/trait_cast_rs"
 categories = ["no-std", "rust-patterns"]
 keywords = ["trait", "cast", "any", "upcast", "rtti"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [lib]
 proc-macro = true
 

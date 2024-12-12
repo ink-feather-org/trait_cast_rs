@@ -25,7 +25,7 @@ macro_rules! make_trait_castable_decl {
         }
       )*
       // Safety:
-      // All returned `TraitcastTarget` are valid for $source
+      // All returned `TraitcastTarget`s are valid for $source
       unsafe impl $crate::TraitcastableAny for $source {
         fn traitcast_targets(&self) -> &[$crate::TraitcastTarget] {
           #[allow(clippy::unused_unit)]
@@ -43,60 +43,11 @@ macro_rules! make_trait_castable_decl {
                 $crate::TraitcastTarget::from::<$source, dyn $target>(),
               )*
             ];
-            $crate::maybe_sort!(targets);
             targets
           };
           &TARGETS
         }
-        $crate::maybe_impl_bin_search!();
       }
     )+
   };
-}
-
-#[doc(hidden)]
-#[macro_export]
-#[cfg(feature = "const_sort")]
-macro_rules! maybe_sort {
-  ($targets:ident) => {{
-    use const_sort_rs::ConstSliceSortExt;
-    $targets.const_sort_unstable_by_key($crate::TraitcastTarget::target_type_id);
-  }};
-}
-
-#[doc(hidden)]
-#[macro_export]
-#[cfg(not(feature = "const_sort"))]
-macro_rules! maybe_sort {
-  ($targets:ident) => {};
-}
-
-#[doc(hidden)]
-#[macro_export]
-#[cfg(feature = "const_sort")]
-macro_rules! maybe_impl_bin_search {
-  () => {
-    fn find_traitcast_target(
-      &self,
-      target: ::core::any::TypeId,
-    ) -> Option<&$crate::TraitcastTarget> {
-      use ::const_sort_rs::ConstSliceSortExt;
-      let targets = self.traitcast_targets();
-      debug_assert!(
-        targets.const_is_sorted_by(|l, r| l.target_type_id().partial_cmp(&r.target_type_id()))
-      );
-
-      targets
-        .binary_search_by_key(&target, $crate::TraitcastTarget::target_type_id)
-        .map(|idx| &targets[idx])
-        .ok()
-    }
-  };
-}
-
-#[doc(hidden)]
-#[macro_export]
-#[cfg(not(feature = "const_sort"))]
-macro_rules! maybe_impl_bin_search {
-  () => {};
 }

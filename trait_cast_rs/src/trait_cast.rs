@@ -67,8 +67,8 @@ pub unsafe trait TraitcastableAny: Any {
   ///
   /// Possible strategies:
   /// * Unsorted `Vec<TraitcastTarget>` lookup. Hot traits first. - Used by the default implementation.
-  /// * `Vec<TraitcastTarget>` sorted by the `TypeId` and performing a binary search on it - Used if feature `const_sort` is used.
   /// * HashMap
+  /// * Temporarily removed without replacement: ~`Vec<TraitcastTarget>` sorted by the `TypeId` and performing a binary search on it - Used if feature `const_sort` is used.~
   fn find_traitcast_target(&self, target: TypeId) -> Option<&TraitcastTarget> {
     self
       .traitcast_targets()

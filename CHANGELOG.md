@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Update trait_cast_impl_rs to `0.2.2`.
-- Update venial dependency to `0.5.0` of trait_cast_impl_rs.
+- Move from `venial` to syn.
 - Use [const Ordering for TypeId](https://github.com/rust-lang/rust/pull/101698) to make a lot of code cleanups
+- Removed the `const_sort` feature because the `const trait impls` in the standard library have been removed.
 
 ## [0.2.4] - 2022-11-10
 

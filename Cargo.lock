@@ -3,21 +3,6 @@
 version = 4
 
 [[package]]
-name = "const_closure"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7383fd99ce178b7cfaad8a0c225cca5fdaf9560ed77b8ecc4ed4b038263a83ec"
-
-[[package]]
-name = "const_sort_rs"
-version = "0.3.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3d65e01e196f5bb3dcfad5f9e3e1092fa24208f45817aa90fd49da92b1ae1cb9"
-dependencies = [
- "const_closure",
-]
-
-[[package]]
 name = "proc-macro2"
 version = "1.0.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -59,7 +44,6 @@ dependencies = [
 name = "trait_cast_rs"
 version = "0.2.4"
 dependencies = [
- "const_sort_rs",
  "trait_cast_impl_rs",
 ]
 
