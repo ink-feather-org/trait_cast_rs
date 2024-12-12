@@ -34,7 +34,7 @@ impl TraitcastTarget {
     Self {
       target_type_id: TypeId::of::<Target>(),
       target_type_name: type_name::<Target>(),
-      metadata: (&Src::METADATA as *const core::ptr::DynMetadata<Target>).cast::<()>(),
+      metadata: core::ptr::from_ref::<core::ptr::DynMetadata<Target>>(&Src::METADATA).cast::<()>(),
     }
   }
   /// Returns the type_id of the type to which can be cast with this instance.
@@ -189,7 +189,7 @@ macro_rules! implement_with_markers {
         // The invariant of Traitcast target guarantees that the metadata points to an instance of `<Target as ::core::ptr::Pointee>::Metadata`.
         let metadata = Self::find_traitcast_target(self, TypeId::of::<Target>()).map(|target| unsafe {*(target.metadata.cast::<<Target as ::core::ptr::Pointee>::Metadata>())});
 
-        let raw_ptr = (self as *const Self).to_raw_parts().0;
+        let raw_ptr = core::ptr::from_ref::<Self>(self).to_raw_parts().0;
 
         metadata.map(|metadata| {
           let ret_ptr: *const Target = ptr::from_raw_parts(raw_ptr, metadata);
@@ -210,7 +210,7 @@ macro_rules! implement_with_markers {
         // The invariant of Traitcast target guarantees that the metadata points to an instance of `<Target as ::core::ptr::Pointee>::Metadata`.
         let metadata = Self::find_traitcast_target(self, TypeId::of::<Target>()).map(|target| unsafe {*(target.metadata.cast::<<Target as ::core::ptr::Pointee>::Metadata>())});
 
-        let raw_ptr = (self as *mut Self).to_raw_parts().0;
+        let raw_ptr = core::ptr::from_mut::<Self>(self).to_raw_parts().0;
 
         metadata.map(|metadata| {
           let ret_ptr: *mut Target = ptr::from_raw_parts_mut(raw_ptr, metadata);
