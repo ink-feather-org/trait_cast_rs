@@ -1,6 +1,6 @@
 [package]
 name = "trait_cast_rs"
-version = "0.2.4"
+version = "0.3.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 authors = [
@@ -20,7 +20,7 @@ alloc = []
 min_specialization = []
 
 [dependencies]
-trait_cast_impl_rs = { path = "../trait_cast_impl_rs" }
+trait_cast_impl_rs = { path = "../trait_cast_impl_rs", version = "0.3.0" }
 
 [lints]
 workspace = true

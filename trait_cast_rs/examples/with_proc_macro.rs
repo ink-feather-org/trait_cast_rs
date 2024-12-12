@@ -1,6 +1,6 @@
 //! This example shows how to use the `make_trait_castable` macro to make a struct castable to multiple traits.
 #![allow(clippy::undocumented_unsafe_blocks)]
-#![expect(
+#![allow(
   unsafe_code,
   reason = "The example shows off the unchecked downcast functions which require unsafe code."
 )]

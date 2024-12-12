@@ -6,10 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Update trait_cast_impl_rs to `0.2.2`.
-- Move from `venial` to syn.
-- Use [const Ordering for TypeId](https://github.com/rust-lang/rust/pull/101698) to make a lot of code cleanups
+## [0.3.0] - 2024-12-12
+
+- Move from `venial` to `syn` in `trait_cast_impl_rs`.
+- Fix lots of clippy lints.
+- Use [const Ordering for TypeId](https://github.com/rust-lang/rust/pull/101698) to make a lot of code cleanups.
 - Removed the `const_sort` feature because the `const trait impls` in the standard library have been removed.
+- Fix the doctest in the README when the `min_specialization` feature is enabled.
 
 ## [0.2.4] - 2022-11-10
 
