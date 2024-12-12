@@ -17,7 +17,7 @@ macro_rules! make_trait_castable_decl {
       $(
         impl $crate::TraitcastableTo<dyn $target> for $source {
           const METADATA: ::core::ptr::DynMetadata<dyn $target> = {
-            let ptr: *const $source = ::core::ptr::from_raw_parts(::core::ptr::null(), ());
+            let ptr: *const $source = ::core::ptr::null::<$source>();
             let ptr: *const dyn $target = ptr as _;
 
             ptr.to_raw_parts().1

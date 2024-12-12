@@ -7,11 +7,10 @@
   const_type_id,      // Needed to enable `TraitcastTarget::create` to be const
   const_type_name,    // Needed for `Debug` implementation
   trait_upcasting,    // Needed to avoid reimplementing Any
-  const_mut_refs,     // Needed since arguments to `TraitcastTarget::create` need a function pointer with &mut argument and return type.
   min_specialization, // Needed to unify the interface between downcast and traitcast (could be avoided with !Trait bounds or trait generics)
+  ptr_metadata,       // Needed to deal with pointer address(and provenance) separately from metadata
   doc_cfg             // For nicer Docs
 )]
-#![feature(ptr_metadata)]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 #![cfg_attr(feature = "const_sort", feature(const_trait_impl))]
 

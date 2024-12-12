@@ -13,7 +13,7 @@ struct HybridPet {
 }
 impl TraitcastableTo<dyn Dog> for HybridPet {
   const METADATA: ::core::ptr::DynMetadata<dyn Dog> = {
-    let ptr: *const HybridPet = ::core::ptr::from_raw_parts(::core::ptr::null(), ());
+    let ptr: *const HybridPet = ::core::ptr::null::<HybridPet>();
     let ptr: *const dyn Dog = ptr as _;
 
     ptr.to_raw_parts().1
@@ -22,7 +22,7 @@ impl TraitcastableTo<dyn Dog> for HybridPet {
 
 impl TraitcastableTo<dyn Cat> for HybridPet {
   const METADATA: ::core::ptr::DynMetadata<dyn Cat> = {
-    let ptr: *const HybridPet = ::core::ptr::from_raw_parts(::core::ptr::null(), ());
+    let ptr: *const HybridPet = ::core::ptr::null::<HybridPet>();
     let ptr: *const dyn Cat = ptr as _;
 
     ptr.to_raw_parts().1

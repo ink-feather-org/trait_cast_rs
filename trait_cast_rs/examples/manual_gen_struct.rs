@@ -35,7 +35,7 @@ trait Cat<T: Display + ?Sized> {
 
 impl<T: Display + 'static> TraitcastableTo<dyn Dog> for HybridPet<T> {
   const METADATA: ::core::ptr::DynMetadata<dyn Dog> = {
-    let ptr: *const HybridPet<T> = ::core::ptr::from_raw_parts(::core::ptr::null(), ());
+    let ptr: *const HybridPet<T> = ::core::ptr::null::<HybridPet<T>>();
     let ptr: *const dyn Dog = ptr as _;
 
     ptr.to_raw_parts().1
@@ -46,7 +46,7 @@ impl<T: Display + 'static, V: Display + 'static + ?Sized> TraitcastableTo<dyn Ca
   for HybridPet<T>
 {
   const METADATA: ::core::ptr::DynMetadata<dyn Cat<V>> = {
-    let ptr: *const HybridPet<T> = ::core::ptr::from_raw_parts(::core::ptr::null(), ());
+    let ptr: *const HybridPet<T> = ::core::ptr::null::<HybridPet<T>>();
     let ptr: *const dyn Cat<V> = ptr as _;
 
     ptr.to_raw_parts().1
