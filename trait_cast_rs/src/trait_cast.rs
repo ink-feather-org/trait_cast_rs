@@ -34,7 +34,7 @@ impl TraitcastTarget {
     Self {
       target_type_id: TypeId::of::<Target>(),
       target_type_name: type_name::<Target>(),
-      metadata: core::ptr::from_ref::<core::ptr::DynMetadata<Target>>(&Src::METADATA).cast::<()>(),
+      metadata: ptr::from_ref::<DynMetadata<Target>>(&Src::METADATA).cast::<()>(),
     }
   }
   /// Returns the type_id of the type to which can be cast with this instance.

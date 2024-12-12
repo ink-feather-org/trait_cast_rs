@@ -23,5 +23,12 @@ const_sort = ["dep:const_sort_rs"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-trait_cast_impl_rs = { path = "../trait_cast_impl_rs", version = "0.2.2" }
-const_sort_rs = { version = "0.3.3", optional = true }
+trait_cast_impl_rs = { path = "../trait_cast_impl_rs" }
+const_sort_rs = { version = "0.3", optional = true }
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = ["-Zunstable-options", "--generate-link-to-definition"]
+all-features = true

@@ -1,3 +1,7 @@
+#![expect(
+  unsafe_code,
+  reason = "Manual traitcast implementations require unsafe code."
+)]
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![feature(ptr_metadata)]
 
