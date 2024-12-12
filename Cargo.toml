@@ -8,8 +8,8 @@ option_if_let_else = "allow"
 # see: https://github.com/bevyengine/bevy/pull/15375#issuecomment-2366966219
 too_long_first_doc_paragraph = "allow"
 
-nursery = "warn"
-pedantic = "warn"
+nursery = { priority = -1, level = "warn" }
+pedantic = { priority = -1, level = "warn" }
 doc_markdown = "warn"
 manual_let_else = "warn"
 match_same_arms = "warn"
@@ -32,8 +32,8 @@ alloc_instead_of_core = "warn"
 nonstandard-style = "warn"
 future-incompatible = "warn"
 missing_docs = "warn"
-unused = "warn"
-rust_2018_idioms = "warn"
+unused = { priority = -1, level = "warn" }
+rust_2018_idioms = { priority = -1, level = "warn" }
 rust-2024-compatibility = "warn"
 array-into-iter = "warn"
 bare-trait-objects = "warn"

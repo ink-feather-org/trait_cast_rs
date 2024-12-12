@@ -1,3 +1,5 @@
+//! This example shows how to use the `make_trait_castable` macro to make a struct castable to multiple traits.
+#![allow(clippy::undocumented_unsafe_blocks)]
 #![expect(
   unsafe_code,
   reason = "The example shows off the unchecked downcast functions which require unsafe code."
@@ -15,7 +17,7 @@ struct HybridPet {
 }
 impl HybridPet {
   fn greet(&self) {
-    println!("{}: Hi", self.name)
+    println!("{}: Hi", self.name);
   }
 }
 

@@ -1,3 +1,5 @@
+//! This example demonstrates how to manually implement the `TraitcastableAny` trait for a generic struct `HybridPet`.
+#![allow(clippy::undocumented_unsafe_blocks, clippy::use_self)]
 #![expect(
   unsafe_code,
   reason = "Manual traitcast implementations require unsafe code."
@@ -5,7 +7,7 @@
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![feature(ptr_metadata)]
 
-use std::{any::type_name, fmt::Display};
+use core::{any::type_name, fmt::Display};
 
 use trait_cast_rs::{TraitcastTarget, TraitcastableAny, TraitcastableAnyInfra, TraitcastableTo};
 
@@ -14,7 +16,7 @@ struct HybridPet<T: Display> {
 }
 impl<T: Display> HybridPet<T> {
   fn greet(&self) {
-    println!("{}: Hi {}", self.name, type_name::<T>())
+    println!("{}: Hi {}", self.name, type_name::<T>());
   }
 }
 
@@ -39,10 +41,10 @@ trait Cat<T: Display + ?Sized> {
 
 impl<T: Display + 'static> TraitcastableTo<dyn Dog> for HybridPet<T> {
   const METADATA: ::core::ptr::DynMetadata<dyn Dog> = {
-    let ptr: *const HybridPet<T> = ::core::ptr::null::<HybridPet<T>>();
-    let ptr: *const dyn Dog = ptr as _;
+    let self_ptr: *const HybridPet<T> = ::core::ptr::null::<HybridPet<T>>();
+    let dyn_ptr: *const dyn Dog = self_ptr as _;
 
-    ptr.to_raw_parts().1
+    dyn_ptr.to_raw_parts().1
   };
 }
 
@@ -50,10 +52,10 @@ impl<T: Display + 'static, V: Display + 'static + ?Sized> TraitcastableTo<dyn Ca
   for HybridPet<T>
 {
   const METADATA: ::core::ptr::DynMetadata<dyn Cat<V>> = {
-    let ptr: *const HybridPet<T> = ::core::ptr::null::<HybridPet<T>>();
-    let ptr: *const dyn Cat<V> = ptr as _;
+    let self_ptr: *const HybridPet<T> = ::core::ptr::null::<HybridPet<T>>();
+    let dyn_ptr: *const dyn Cat<V> = self_ptr as _;
 
-    ptr.to_raw_parts().1
+    dyn_ptr.to_raw_parts().1
   };
 }
 

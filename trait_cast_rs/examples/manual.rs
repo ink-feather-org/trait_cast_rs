@@ -1,3 +1,5 @@
+//! This example demonstrates how to manually implement the `TraitcastableAny` trait for a non generic struct `HybridPet`.
+#![allow(clippy::undocumented_unsafe_blocks, clippy::use_self)]
 #![expect(
   unsafe_code,
   reason = "Manual traitcast implementations require unsafe code."
@@ -17,19 +19,19 @@ struct HybridPet {
 }
 impl TraitcastableTo<dyn Dog> for HybridPet {
   const METADATA: ::core::ptr::DynMetadata<dyn Dog> = {
-    let ptr: *const HybridPet = ::core::ptr::null::<HybridPet>();
-    let ptr: *const dyn Dog = ptr as _;
+    let self_ptr: *const HybridPet = ::core::ptr::null::<HybridPet>();
+    let dyn_ptr: *const dyn Dog = self_ptr as _;
 
-    ptr.to_raw_parts().1
+    dyn_ptr.to_raw_parts().1
   };
 }
 
 impl TraitcastableTo<dyn Cat> for HybridPet {
   const METADATA: ::core::ptr::DynMetadata<dyn Cat> = {
-    let ptr: *const HybridPet = ::core::ptr::null::<HybridPet>();
-    let ptr: *const dyn Cat = ptr as _;
+    let self_ptr: *const Self = ::core::ptr::null::<Self>();
+    let dyn_ptr: *const dyn Cat = self_ptr as _;
 
-    ptr.to_raw_parts().1
+    dyn_ptr.to_raw_parts().1
   };
 }
 
@@ -44,7 +46,7 @@ unsafe impl TraitcastableAny for HybridPet {
 }
 impl HybridPet {
   fn greet(&self) {
-    println!("{}: Hi", self.name)
+    println!("{}: Hi", self.name);
   }
 }
 

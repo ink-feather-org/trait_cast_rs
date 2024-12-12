@@ -12,23 +12,23 @@ use syn::{
   Error, ItemEnum, ItemStruct, Token, TypePath,
 };
 
-/// Parses a list of TypePaths separated by commas.
+/// Parses a list of `TypePath`s separated by commas.
 struct TraitCastTargets {
-  vars: Vec<TypePath>,
+  targets: Vec<TypePath>,
 }
 
 impl Parse for TraitCastTargets {
   fn parse(input: ParseStream<'_>) -> parse::Result<Self> {
-    let vars: Vec<TypePath> = Punctuated::<TypePath, Token![,]>::parse_terminated(input)?
+    let targets: Vec<TypePath> = Punctuated::<TypePath, Token![,]>::parse_terminated(input)?
       .into_iter()
       .collect();
-    Ok(TraitCastTargets { vars: vars })
+    Ok(TraitCastTargets { targets })
   }
 }
 
 impl quote::ToTokens for TraitCastTargets {
   fn to_tokens(&self, tokens: &mut TokenStream2) {
-    let vars = &self.vars;
+    let vars = &self.targets;
     tokens.extend(quote!(#(#vars),*));
   }
 }

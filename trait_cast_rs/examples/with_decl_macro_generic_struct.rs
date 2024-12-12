@@ -1,7 +1,8 @@
+//! This example demonstrates how to implement the `TraitcastableAny` trait for a generic struct `HybridPet` using the `make_trait_castable_decl` macro.
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![feature(ptr_metadata)]
 
-use std::{any::type_name, fmt::Display};
+use core::{any::type_name, fmt::Display};
 
 use trait_cast_rs::{make_trait_castable_decl, TraitcastableAny, TraitcastableAnyInfra};
 
@@ -10,7 +11,7 @@ struct HybridPet<T: Display> {
 }
 impl<T: Display> HybridPet<T> {
   fn greet(&self) {
-    println!("{}: Hi {}", self.name, type_name::<T>())
+    println!("{}: Hi {}", self.name, type_name::<T>());
   }
 }
 

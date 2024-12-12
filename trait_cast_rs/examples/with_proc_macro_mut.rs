@@ -1,3 +1,4 @@
+//! This example demonstrates how to modify a type erased traitcastable object.
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 #![feature(ptr_metadata)]
@@ -10,7 +11,7 @@ struct HybridPet {
 }
 impl HybridPet {
   fn greet(&self) {
-    println!("{}: Hi", self.name)
+    println!("{}: Hi", self.name);
   }
 }
 

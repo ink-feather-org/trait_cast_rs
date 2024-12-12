@@ -1,3 +1,4 @@
+//! This example demonstrates how to use the `make_trait_castable` proc macro with an enum.
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 #![feature(ptr_metadata)]
@@ -11,20 +12,20 @@ enum HybridPet {
 impl HybridPet {
   fn greet(&self) {
     let Self::Name(name) = self;
-    println!("{name}: Hi")
+    println!("{name}: Hi");
   }
 }
 
 impl Dog for HybridPet {
   fn bark(&self) {
     let Self::Name(name) = self;
-    println!("{name}: Woof!")
+    println!("{name}: Woof!");
   }
 }
 impl Cat for HybridPet {
   fn meow(&self) {
     let Self::Name(name) = self;
-    println!("{name}: Meow!")
+    println!("{name}: Meow!");
   }
 }
 

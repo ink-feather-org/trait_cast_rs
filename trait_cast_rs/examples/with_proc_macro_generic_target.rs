@@ -1,8 +1,9 @@
+//! This example demonstrates how to use the `make_trait_castable` proc macro with a generic traitcast target struct.
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 #![feature(ptr_metadata)]
 
-use std::any::type_name;
+use core::any::type_name;
 
 use trait_cast_rs::{make_trait_castable, TraitcastableAny, TraitcastableAnyInfra};
 
@@ -13,7 +14,7 @@ struct HybridPet {
 struct TestStruct<T>(T);
 impl HybridPet {
   fn greet(&self) {
-    println!("{}: Hi", self.name)
+    println!("{}: Hi", self.name);
   }
 }
 

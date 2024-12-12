@@ -1,10 +1,11 @@
+//! This example demonstrates how to use the `make_trait_castable_decl` macro to declare a type as traitcastable.
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 #![feature(trait_upcasting)]
 #![allow(incomplete_features)]
 #![feature(ptr_metadata)]
 
-use std::any::Any;
+use core::any::Any;
 
 use trait_cast_rs::{make_trait_castable_decl, TraitcastableAny, TraitcastableAnyInfra};
 
@@ -21,7 +22,7 @@ make_trait_castable_decl! {
 
 impl HybridPet {
   fn greet(&self) {
-    println!("{}: Hi", self.name)
+    println!("{}: Hi", self.name);
   }
 }
 
