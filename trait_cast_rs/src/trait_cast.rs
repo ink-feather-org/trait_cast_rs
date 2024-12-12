@@ -101,6 +101,8 @@ pub trait TraitcastableAnyInfra<Target: ?Sized>: 'static {
   fn downcast_ref(&self) -> Option<&Target>;
 
   /// Unchecked variant of `downcast_ref`
+  /// # Safety
+  /// This function is unsafe because the caller must ensure that the cast is valid.
   #[cfg(feature = "downcast_unchecked")]
   #[doc(cfg(feature = "downcast_unchecked"))]
   unsafe fn downcast_ref_unchecked(&self) -> &Target;
@@ -114,6 +116,8 @@ pub trait TraitcastableAnyInfra<Target: ?Sized>: 'static {
   fn downcast_mut(&mut self) -> Option<&mut Target>;
 
   /// Unchecked variant of `downcast_ref`
+  /// # Safety
+  /// This function is unsafe because the caller must ensure that the cast is valid.
   #[cfg(feature = "downcast_unchecked")]
   #[doc(cfg(feature = "downcast_unchecked"))]
   unsafe fn downcast_mut_unchecked(&mut self) -> &mut Target;
@@ -140,6 +144,8 @@ pub trait TraitcastableAnyInfraExt<Target: ?Sized + 'static>: Sized {
   fn downcast(self) -> Result<Self::Output, Self>;
 
   /// Unchecked variant of `downcast`
+  /// # Safety
+  /// This function is unsafe because the caller must ensure that the cast is valid.
   #[cfg(feature = "downcast_unchecked")]
   #[doc(cfg(feature = "downcast_unchecked"))]
   unsafe fn downcast_unchecked(self) -> Self::Output;
@@ -202,7 +208,8 @@ macro_rules! implement_with_markers {
       }
       #[cfg(feature = "downcast_unchecked")]
       default unsafe fn downcast_ref_unchecked(&self) -> &Target {
-        self.downcast_ref().unwrap_unchecked()
+        // SAFETY: The caller must ensure that the cast is valid.
+        unsafe { self.downcast_ref().unwrap_unchecked() }
       }
 
       default fn downcast_mut(&mut self) -> Option<&mut Target> {
@@ -224,7 +231,8 @@ macro_rules! implement_with_markers {
       }
       #[cfg(feature = "downcast_unchecked")]
       default unsafe fn downcast_mut_unchecked(&mut self) -> &mut Target {
-        self.downcast_mut().unwrap_unchecked()
+        // SAFETY: The caller must ensure that the cast is valid.
+        unsafe { self.downcast_mut().unwrap_unchecked() }
       }
     }
     impl<Target: Sized + 'static + $($traits +)*> TraitcastableAnyInfra<Target> for dyn TraitcastableAny $(+ $traits)* {
@@ -239,7 +247,8 @@ macro_rules! implement_with_markers {
       }
       #[cfg(feature = "downcast_unchecked")]
       unsafe fn downcast_ref_unchecked(&self) -> &Target {
-        <dyn Any>::downcast_ref_unchecked::<Target>(self)
+        // SAFETY: We are just forwarding the call to the `Any` trait.
+        unsafe { <dyn Any>::downcast_ref_unchecked::<Target>(self) }
       }
 
       fn downcast_mut(&mut self) -> Option<&mut Target> {
@@ -247,7 +256,8 @@ macro_rules! implement_with_markers {
       }
       #[cfg(feature = "downcast_unchecked")]
       unsafe fn downcast_mut_unchecked(&mut self) -> &mut Target {
-        <dyn Any>::downcast_mut_unchecked::<Target>(self)
+        // SAFETY: We are just forwarding the call to the `Any` trait.
+        unsafe { <dyn Any>::downcast_mut_unchecked::<Target>(self) }
       }
     }
   };
@@ -277,7 +287,8 @@ impl<Src: TraitcastableAnyInfra<Target> + ?Sized, Target: ?Sized + 'static>
   }
   #[cfg(feature = "downcast_unchecked")]
   default unsafe fn downcast_unchecked(self) -> Self::Output {
-    <Self as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
+    // SAFETY: The caller must ensure that the cast is valid.
+    unsafe { <Self as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked() }
   }
 }
 
@@ -304,7 +315,8 @@ impl<Src: TraitcastableAnyInfra<Target>, Target: Sized + 'static> TraitcastableA
 
   #[cfg(feature = "downcast_unchecked")]
   unsafe fn downcast_unchecked(self) -> Self::Output {
-    <Box<dyn Any>>::downcast_unchecked::<Target>(self)
+    // SAFETY: The caller must ensure that the cast is valid.
+    unsafe { <Box<dyn Any>>::downcast_unchecked::<Target>(self) }
   }
 }
 
@@ -332,7 +344,8 @@ impl<Src: TraitcastableAnyInfra<Target> + ?Sized, Target: ?Sized + 'static>
   }
   #[cfg(feature = "downcast_unchecked")]
   default unsafe fn downcast_unchecked(self) -> Self::Output {
-    <Self as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
+    // SAFETY: The caller must ensure that the cast is valid.
+    unsafe { <Self as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked() }
   }
 }
 
@@ -359,7 +372,8 @@ impl<Src: TraitcastableAnyInfra<Target>, Target: Sized + 'static> TraitcastableA
 
   #[cfg(feature = "downcast_unchecked")]
   unsafe fn downcast_unchecked(self) -> Self::Output {
-    <Rc<dyn Any>>::downcast_unchecked::<Target>(self)
+    // SAFETY: The caller must ensure that the cast is valid.
+    unsafe { <Rc<dyn Any>>::downcast_unchecked::<Target>(self) }
   }
 }
 
@@ -389,7 +403,8 @@ impl<
   }
   #[cfg(feature = "downcast_unchecked")]
   default unsafe fn downcast_unchecked(self) -> Self::Output {
-    <Self as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked()
+    // SAFETY: The caller must ensure that the cast is valid.
+    unsafe { <Self as TraitcastableAnyInfraExt<Target>>::downcast(self).unwrap_unchecked() }
   }
 }
 
@@ -416,7 +431,8 @@ impl<Src: TraitcastableAnyInfra<Target> + Send + Sync, Target: Sized + 'static +
 
   #[cfg(feature = "downcast_unchecked")]
   unsafe fn downcast_unchecked(self) -> Self::Output {
-    <Arc<dyn Any + Send + Sync>>::downcast_unchecked::<Target>(self)
+    // SAFETY: The caller must ensure that the cast is valid.
+    unsafe { <Arc<dyn Any + Send + Sync>>::downcast_unchecked::<Target>(self) }
   }
 }
 

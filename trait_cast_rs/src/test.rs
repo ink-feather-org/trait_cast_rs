@@ -1,6 +1,5 @@
 use crate::{make_trait_castable_decl, TraitcastableAny, TraitcastableAnyInfra};
 use alloc::boxed::Box;
-use trait_cast_impl_rs::make_trait_castable;
 
 const fn _test_empty_trait_cast_targets() {
   struct Woof {}

@@ -22,7 +22,7 @@ impl Parse for TraitCastTargets {
     let targets: Vec<TypePath> = Punctuated::<TypePath, Token![,]>::parse_terminated(input)?
       .into_iter()
       .collect();
-    Ok(TraitCastTargets { targets })
+    Ok(Self { targets })
   }
 }
 

@@ -39,7 +39,8 @@ Note: No modifications on the *target* traits are necessary. Which allows you to
 ## Example
 
 ```rust
-#![feature(ptr_metadata, min_specialization)]
+#![cfg_attr(feature = "min_specialization", feature(min_specialization))]
+#![feature(ptr_metadata)]
 use trait_cast_rs::{
   make_trait_castable, TraitcastableAny, TraitcastableAnyInfra, TraitcastableAnyInfraExt,
 };
