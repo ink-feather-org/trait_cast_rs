@@ -6,8 +6,6 @@
 [![crates.io](https://img.shields.io/crates/v/trait_cast_rs.svg)](https://crates.io/crates/trait_cast_rs)
 [![rustc](https://img.shields.io/badge/rustc-nightly-lightgrey)](https://doc.rust-lang.org/nightly/std/)
 
-<!-- The rest of this section comes almost straight from the crate docs from the source. Double check the doc tests. -->
-
 ## Requirements
 
 This crate requires a nightly compiler.
