@@ -148,7 +148,7 @@ pub trait TraitcastableAnyInfraExt<Target: ?Sized + 'static>: Sized {
 #[cfg(feature = "min_specialization")]
 // Safety:
 // Since `traitcast_targets` returns nothing this is always safe.
-// `find_traitcast_target` has the default implementations
+// `find_traitcast_target` has the default implementations.
 unsafe impl<T: 'static> TraitcastableAny for T {
   default fn traitcast_targets(&self) -> &[TraitcastTarget] {
     &[]

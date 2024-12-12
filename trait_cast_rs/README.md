@@ -39,9 +39,7 @@ Note: No modifications on the *target* traits are necessary. Which allows you to
 ## Example
 
 ```rust
-#![feature(
-  ptr_metadata, //
-)]
+#![feature(ptr_metadata, min_specialization)]
 use trait_cast_rs::{
   make_trait_castable, TraitcastableAny, TraitcastableAnyInfra, TraitcastableAnyInfraExt,
 };
@@ -52,7 +50,7 @@ trait Print {
 }
 impl Print for Source {
   fn print(&self) {
-    println!("{}", self.0)
+    println!("{}", self.0);
   }
 }
 
