@@ -1,4 +1,4 @@
-//! Proc-macro automating the implementation of `trait_cast_rs::TraitcastableAny`.
+//! Proc-macro automating the implementation of `trait_cast::TraitcastableAny`.
 //!
 //! See `make_trait_castable` for more details.
 
@@ -6,10 +6,10 @@ use proc_macro::TokenStream as TokenStream1;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{
+  Error, ItemEnum, ItemStruct, Token, TypePath,
   parse::{self, Parse, ParseStream},
   parse_macro_input,
   punctuated::Punctuated,
-  Error, ItemEnum, ItemStruct, Token, TypePath,
 };
 
 /// Parses a list of `TypePath`s separated by commas.
@@ -42,7 +42,7 @@ impl quote::ToTokens for TraitCastTargets {
 /// ```no_build
 ///   extern crate trait_cast_rs;
 ///
-///   use trait_cast_rs::{make_trait_castable, TraitcastTarget, TraitcastTo, TraitcastableAny};
+///   use trait_cast::{make_trait_castable, TraitcastTarget, TraitcastTo, TraitcastableAny};
 ///
 ///
 ///   #[make_trait_castable(Print)]
@@ -91,7 +91,7 @@ pub fn make_trait_castable(args: TokenStream1, input: TokenStream1) -> TokenStre
 
   TokenStream1::from(quote!(
     #input
-    ::trait_cast_rs::make_trait_castable_decl! {
+    ::trait_cast::make_trait_castable_decl! {
     #source_ident => (#trait_cast_targets)
   }))
 }

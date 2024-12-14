@@ -23,7 +23,7 @@ pub use trait_cast::*;
 
 mod decl_macro;
 
-pub use trait_cast_impl_rs::make_trait_castable;
+pub use trait_cast_macros::make_trait_castable;
 
 #[cfg(test)]
 mod test;

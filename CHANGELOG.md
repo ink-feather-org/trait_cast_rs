@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2024-12-14
+
+- Restructure the project.
+- Rebrand as `trait-cast`.
+
 ## [0.3.0] - 2024-12-12
 
 - Move from `venial` to `syn` in `trait_cast_impl_rs`.
@@ -22,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.3] - 2022-09-25
 
-Moved to [ink-feather-org](https://github.com/ink-feather-org/trait_cast_rs).
+Moved to [ink-feather-org](https://github.com/ink-feather-org/trait-cast-rs).
 Updated dependencies.
 
 ### Fixes
@@ -42,9 +47,9 @@ Updated dependencies.
 
 Initial release.
 
-[Unreleased]: https://github.com/ink-feather-org/trait_cast_rs/compare/v0.2.4...HEAD
-[0.2.4]: https://github.com/ink-feather-org/trait_cast_rs/compare/v0.2.3...v0.2.4
-[0.2.3]: https://github.com/ink-feather-org/trait_cast_rs/compare/v0.2.2...v0.2.3
-[0.2.2]: https://github.com/ink-feather-org/trait_cast_rs/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/ink-feather-org/trait_cast_rs/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/ink-feather-org/trait_cast_rs/releases/tag/v0.2.0
+[Unreleased]: https://github.com/ink-feather-org/trait-cast-rs/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/ink-feather-org/trait-cast-rs/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/ink-feather-org/trait-cast-rs/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/ink-feather-org/trait-cast-rs/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/ink-feather-org/trait-cast-rs/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/ink-feather-org/trait-cast-rs/releases/tag/v0.2.0

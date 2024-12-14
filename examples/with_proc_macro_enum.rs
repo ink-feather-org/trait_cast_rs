@@ -3,7 +3,7 @@
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
 #![feature(ptr_metadata)]
 
-use trait_cast_rs::{make_trait_castable, TraitcastableAny, TraitcastableAnyInfra};
+use trait_cast::{make_trait_castable, TraitcastableAny, TraitcastableAnyInfra};
 
 #[make_trait_castable(Dog, Cat)]
 enum HybridPet {

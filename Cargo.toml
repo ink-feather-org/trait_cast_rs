@@ -1,6 +1,5 @@
 [workspace]
 resolver = "2"
-members = ["trait_cast_impl_rs", "trait_cast_rs"]
 
 [workspace.lints.clippy]
 needless_lifetimes = "allow"
@@ -47,3 +46,33 @@ unexpected_cfgs = { level = "warn" }
 unsafe_code = "deny"
 unsafe_op_in_unsafe_fn = "warn"
 unused_qualifications = "warn"
+
+# package toml
+
+[package]
+name = "trait-cast"
+version = "0.3.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+description = "Get your own Any with support for casting to trait objects."
+homepage = "https://github.com/ink-feather-org/trait-cast-rs"
+repository = "https://github.com/ink-feather-org/trait-cast-rs"
+categories = ["no-std", "rust-patterns"]
+keywords = ["trait", "cast", "any", "upcast", "rtti", "nightly"]
+exclude = ["/macros/"]
+
+[features]
+default = ["alloc"]
+downcast_unchecked = []
+alloc = []
+min_specialization = []
+
+[dependencies]
+trait-cast-macros = { path = "macros", version = "0.3.0" }
+
+[lints]
+workspace = true
+
+[package.metadata.docs.rs]
+rustdoc-args = ["-Zunstable-options", "--generate-link-to-definition"]
+all-features = true

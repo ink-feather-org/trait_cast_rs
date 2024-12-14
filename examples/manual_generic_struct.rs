@@ -9,7 +9,7 @@
 
 use core::{any::type_name, fmt::Display};
 
-use trait_cast_rs::{TraitcastTarget, TraitcastableAny, TraitcastableAnyInfra, TraitcastableTo};
+use trait_cast::{TraitcastTarget, TraitcastableAny, TraitcastableAnyInfra, TraitcastableTo};
 
 struct HybridPet<T: Display> {
   name: T,

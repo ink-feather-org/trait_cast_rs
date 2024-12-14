@@ -4,7 +4,7 @@
 
 use core::{any::type_name, fmt::Display};
 
-use trait_cast_rs::{make_trait_castable_decl, TraitcastableAny, TraitcastableAnyInfra};
+use trait_cast::{make_trait_castable_decl, TraitcastableAny, TraitcastableAnyInfra};
 
 struct HybridPet<T: Display> {
   name: T,

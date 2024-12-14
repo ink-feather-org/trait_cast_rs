@@ -32,19 +32,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "trait_cast_impl_rs"
-version = "0.3.0"
+name = "trait-cast"
+version = "0.3.1"
+dependencies = [
+ "trait-cast-macros",
+]
+
+[[package]]
+name = "trait-cast-macros"
+version = "0.3.1"
 dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "trait_cast_rs"
-version = "0.3.0"
-dependencies = [
- "trait_cast_impl_rs",
 ]
 
 [[package]]

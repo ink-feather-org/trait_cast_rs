@@ -1,25 +1,20 @@
-//! This example demonstrates how to use the `make_trait_castable_decl` macro to declare a type as traitcastable.
+//! This example shows how to use the `make_trait_castable` macro to make a struct castable to multiple traits.
+#![allow(clippy::undocumented_unsafe_blocks)]
+#![allow(
+  unsafe_code,
+  reason = "The example shows off the unchecked downcast functions which require unsafe code."
+)]
 #![cfg_attr(feature = "min_specialization", feature(min_specialization))]
 #![cfg_attr(feature = "downcast_unchecked", feature(downcast_unchecked))]
-#![feature(trait_upcasting)]
-#![allow(incomplete_features)]
 #![feature(ptr_metadata)]
+use trait_cast::{
+  make_trait_castable, TraitcastableAny, TraitcastableAnyInfra, TraitcastableAnyInfraExt,
+};
 
-use core::any::Any;
-
-use trait_cast_rs::{make_trait_castable_decl, TraitcastableAny, TraitcastableAnyInfra};
-
+#[make_trait_castable(Dog, Cat)]
 struct HybridPet {
   name: String,
 }
-
-make_trait_castable_decl! {
-  HybridPet => (Dog, Cat),
-  // Multiple standalone entries in one macro invocation are possible.
-  // HybridAnimal => (Cow, Cat),
-  // Sunflower => (Flower, Plant)
-}
-
 impl HybridPet {
   fn greet(&self) {
     println!("{}: Hi", self.name);
@@ -58,8 +53,12 @@ fn main() {
 
   let as_cat: &dyn Cat = castable_pet.downcast_ref().unwrap();
   as_cat.meow();
-
-  let any_pet: Box<dyn Any> = castable_pet;
-  let cast_back: &HybridPet = any_pet.downcast_ref().unwrap();
+  #[cfg(feature = "downcast_unchecked")]
+  let cast_back: &HybridPet = unsafe { castable_pet.downcast_ref_unchecked() };
+  #[cfg(not(feature = "downcast_unchecked"))]
+  let cast_back: &HybridPet = castable_pet.downcast_ref().unwrap();
   cast_back.greet();
+
+  let into_cat: Box<dyn Cat> = castable_pet.downcast().unwrap();
+  into_cat.meow();
 }

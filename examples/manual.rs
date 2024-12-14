@@ -9,7 +9,7 @@
 #![allow(incomplete_features)]
 #![feature(ptr_metadata)]
 
-use trait_cast_rs::{
+use trait_cast::{
   TraitcastTarget, TraitcastableAny, TraitcastableAnyInfra, TraitcastableAnyInfraExt,
   TraitcastableTo,
 };
