@@ -61,7 +61,7 @@ x.print();
 
 ## EVEN MORE Examples 🔥
 
-Check out the [examples](https://github.com/ink-feather-org/trait-cast-rs/tree/main/trait-cast/examples).
+Check out the [examples](https://github.com/ink-feather-org/trait-cast-rs/tree/main/examples).
 
 If you want to do something the `make_trait_castable` attribute macro can't handle (like implementing for generic structs - pull requests are welcome)
 check out the `manual*.rs` examples.
