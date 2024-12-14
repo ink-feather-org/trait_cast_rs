@@ -7,7 +7,7 @@
 
 use core::any::Any;
 
-use trait_cast::{make_trait_castable_decl, TraitcastableAny, TraitcastableAnyInfra};
+use trait_cast::{TraitcastableAny, TraitcastableAnyInfra, make_trait_castable_decl};
 
 struct HybridPet {
   name: String,

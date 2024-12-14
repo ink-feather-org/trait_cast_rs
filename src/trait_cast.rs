@@ -1,5 +1,5 @@
 use core::{
-  any::{type_name, Any, TypeId},
+  any::{Any, TypeId, type_name},
   fmt::{self, Debug, Formatter},
   ptr,
   ptr::DynMetadata,
@@ -379,9 +379,9 @@ impl<Src: TraitcastableAnyInfra<Target>, Target: Sized + 'static> TraitcastableA
 
 #[cfg(feature = "alloc")]
 impl<
-    Src: TraitcastableAnyInfra<Target> + ?Sized + Send + Sync,
-    Target: ?Sized + 'static + Send + Sync,
-  > TraitcastableAnyInfraExt<Target> for Arc<Src>
+  Src: TraitcastableAnyInfra<Target> + ?Sized + Send + Sync,
+  Target: ?Sized + 'static + Send + Sync,
+> TraitcastableAnyInfraExt<Target> for Arc<Src>
 {
   type Output = Arc<Target>;
 

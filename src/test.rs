@@ -1,4 +1,4 @@
-use crate::{make_trait_castable_decl, TraitcastableAny, TraitcastableAnyInfra};
+use crate::{TraitcastableAny, TraitcastableAnyInfra, make_trait_castable_decl};
 use alloc::boxed::Box;
 
 const fn _test_empty_trait_cast_targets() {
