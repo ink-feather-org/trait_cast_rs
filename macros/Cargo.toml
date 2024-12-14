@@ -7,7 +7,7 @@ description = "Proc-macro implementation for the 'trait-cast' crate."
 homepage = "https://github.com/ink-feather-org/trait-cast-rs"
 repository = "https://github.com/ink-feather-org/trait-cast-rs"
 categories = ["no-std", "rust-patterns"]
-keywords = ["trait", "cast", "any", "upcast", "rtti", "nightly"]
+keywords = ["trait", "cast", "any", "upcast", "rtti"]
 
 [lib]
 proc-macro = true

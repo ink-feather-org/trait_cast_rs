@@ -58,7 +58,7 @@ description = "Get your own Any with support for casting to trait objects."
 homepage = "https://github.com/ink-feather-org/trait-cast-rs"
 repository = "https://github.com/ink-feather-org/trait-cast-rs"
 categories = ["no-std", "rust-patterns"]
-keywords = ["trait", "cast", "any", "upcast", "rtti", "nightly"]
+keywords = ["trait", "cast", "any", "upcast", "rtti"]
 exclude = ["/macros/"]
 
 [features]
