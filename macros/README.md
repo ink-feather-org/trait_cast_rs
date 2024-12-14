@@ -1,4 +1,4 @@
-# trait_cast_impl_rs
+# trait-cast-macros
 
 [![Daily-Nightly](https://github.com/ink-feather-org/trait-cast-rs/actions/workflows/rust_daily_nightly_check.yml/badge.svg)](https://github.com/ink-feather-org/trait-cast-rs/actions/workflows/rust_daily_nightly_check.yml)
 [![Rust-Main-CI](https://github.com/ink-feather-org/trait-cast-rs/actions/workflows/rust_main.yml/badge.svg)](https://github.com/ink-feather-org/trait-cast-rs/actions/workflows/rust_main.yml)
@@ -10,4 +10,5 @@ Proc-macro automating the implementation of `trait_cast::TraitcastableAny`.
 
 ## Usage
 
-This crate is not meant to be used directly use the [trait_cast_rs](https://github.com/ink-feather-org/trait-cast-rs) crate instead.
+This crate is not meant to be used directly.
+Use the [trait-cast](https://github.com/ink-feather-org/trait-cast-rs) crate instead.
