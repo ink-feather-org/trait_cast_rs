@@ -1,6 +1,8 @@
+cargo-features = ["edition2024"]
+
 [package]
 name = "trait-cast-macros"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Proc-macro implementation for the 'trait-cast' crate."

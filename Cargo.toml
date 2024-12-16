@@ -1,3 +1,5 @@
+cargo-features = ["edition2024"]
+
 [workspace]
 resolver = "2"
 
@@ -51,7 +53,7 @@ unused_qualifications = "warn"
 
 [package]
 name = "trait-cast"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Get your own Any with support for casting to trait objects."
@@ -68,7 +70,7 @@ alloc = []
 min_specialization = []
 
 [dependencies]
-trait-cast-macros = { path = "macros", version = "0.3.0" }
+trait-cast-macros = { path = "macros", version = "0.3.2" }
 
 [lints]
 workspace = true

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2024-12-16
+
+- Support older nightly versions because the one that build the docs is currently frozen.
+
 ## [0.3.1] - 2024-12-14
 
 - Restructure the project.
