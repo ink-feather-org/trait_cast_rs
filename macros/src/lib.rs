@@ -71,6 +71,10 @@ impl quote::ToTokens for TraitCastTargets {
 #[proc_macro_attribute]
 pub fn make_trait_castable(args: TokenStream1, input: TokenStream1) -> TokenStream1 {
   proc_macro_logger_default_setup();
+
+  let cargo_manifest = cargo_manifest::CargoManifest::shared();
+  let crate_path = cargo_manifest.resolve_crate_path("trait-cast");
+
   // Convert the input to a TokenStream2
   let input = TokenStream2::from(input);
 
@@ -96,7 +100,7 @@ pub fn make_trait_castable(args: TokenStream1, input: TokenStream1) -> TokenStre
 
   TokenStream1::from(quote!(
     #input
-    ::trait_cast::make_trait_castable_decl! {
+    #crate_path::make_trait_castable_decl! {
     #source_ident => (#trait_cast_targets)
   }))
 }
