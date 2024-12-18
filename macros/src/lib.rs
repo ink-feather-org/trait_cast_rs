@@ -73,7 +73,7 @@ pub fn make_trait_castable(args: TokenStream1, input: TokenStream1) -> TokenStre
   proc_macro_logger_default_setup();
 
   let cargo_manifest = cargo_manifest::CargoManifest::shared();
-  let crate_path = cargo_manifest.resolve_crate_path("trait-cast");
+  let crate_path = cargo_manifest.resolve_crate_path("trait-cast", &[]);
 
   // Convert the input to a TokenStream2
   let input = TokenStream2::from(input);

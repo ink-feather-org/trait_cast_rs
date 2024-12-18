@@ -287,9 +287,13 @@ impl CargoManifest {
   }
 
   /// Returns the path for the crate with the given name.
-  pub fn resolve_crate_path(&self, crate_name: &str) -> syn::Path {
+  pub fn resolve_crate_path(
+    &self,
+    crate_name: &str,
+    known_re_exporting_crates: &[&KnownReExportingCrate<'_>],
+  ) -> syn::Path {
     self
-      .try_resolve_crate_path(crate_name, &[])
+      .try_resolve_crate_path(crate_name, &known_re_exporting_crates)
       .unwrap_or_else(|_| crate_name_to_path(crate_name))
   }
 }

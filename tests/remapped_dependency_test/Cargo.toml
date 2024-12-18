@@ -1,5 +1,3 @@
-cargo-features = ["edition2024"]
-
 [package]
 name = "remapped_dependency_test"
 edition = "2024"
