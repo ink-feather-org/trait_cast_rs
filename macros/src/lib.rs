@@ -1,6 +1,7 @@
 //! Proc-macro automating the implementation of `trait_cast::TraitcastableAny`.
 //!
 //! See `make_trait_castable` for more details.
+#![feature(map_try_insert)]
 
 use proc_macro::TokenStream as TokenStream1;
 use proc_macro2::TokenStream as TokenStream2;
@@ -11,6 +12,9 @@ use syn::{
   parse_macro_input,
   punctuated::Punctuated,
 };
+use tracing_proc_macros_ink::proc_macro_logger_default_setup;
+
+mod cargo_manifest;
 
 /// Parses a list of `TypePath`s separated by commas.
 struct TraitCastTargets {
@@ -66,6 +70,7 @@ impl quote::ToTokens for TraitCastTargets {
 /// ```
 #[proc_macro_attribute]
 pub fn make_trait_castable(args: TokenStream1, input: TokenStream1) -> TokenStream1 {
+  proc_macro_logger_default_setup();
   // Convert the input to a TokenStream2
   let input = TokenStream2::from(input);
 

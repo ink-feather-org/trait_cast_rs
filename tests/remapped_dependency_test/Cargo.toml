@@ -1,0 +1,8 @@
+cargo-features = ["edition2024"]
+
+[package]
+name = "remapped_dependency_test"
+edition = "2024"
+
+[dependencies]
+trait-cast-renamed = { path = "../../", package = "trait-cast" }
