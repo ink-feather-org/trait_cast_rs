@@ -47,15 +47,14 @@ struct ResolvedDependenciesMap(HashMap<String, Result<String, TryResolveCratePat
 ///
 /// The [`CargoManifest`] is used to resolve a crate name to an absolute module path.
 pub struct CargoManifest {
-  cargo_manifest_path: PathBuf,
-  cargo_manifest: DocumentMut,
+  user_crate_name: String,
 
   resolved_dependencies: ResolvedDependenciesMap,
   resolved_dependencies_dev: ResolvedDependenciesMap,
   resolved_dependencies_build: ResolvedDependenciesMap,
 }
 
-fn crate_name_to_path(crate_name: &str) -> syn::Path {
+pub fn crate_name_to_path(crate_name: &str) -> syn::Path {
   let crate_name = crate_name.replace('-', "_");
   syn::parse_str::<syn::Path>(crate_name.as_str()).expect("Failed to parse crate name as path")
 }
@@ -135,6 +134,14 @@ impl CargoManifest {
           )
         });
 
+      // parse user crate name
+      let user_crate_name = cargo_manifest
+        .get("package")
+        .and_then(|package_section| package_section.get("name"))
+        .and_then(|name_field| name_field.as_str())
+        .expect("The package name in the Cargo.toml is not a string")
+        .to_string();
+
       let resolve_dependencies_section = |dependencies_section| {
         let mut resolved_dependencies = ResolvedDependenciesMap::default();
         resolve_dependencies(dependencies_section, &mut resolved_dependencies);
@@ -155,8 +162,7 @@ impl CargoManifest {
         .unwrap_or_default();
 
       CargoManifest {
-        cargo_manifest_path,
-        cargo_manifest,
+        user_crate_name,
         resolved_dependencies,
         resolved_dependencies_dev,
         resolved_dependencies_build,
@@ -187,10 +193,16 @@ impl CargoManifest {
   ///
   /// The function would return `Some("renamed-crate-name")` for the `Item` above.
   fn try_resolve_crate_path_for_dependency_map(
+    &self,
     crate_name: &str,
     known_re_exporting_crates: &[&KnownReExportingCrate<'_>],
     resolved_dependencies: &ResolvedDependenciesMap,
   ) -> Result<syn::Path, TryResolveCratePathError> {
+    // Check if the user crate is our own crate.
+    if crate_name == self.user_crate_name {
+      return Ok(crate_name_to_path(crate_name));
+    }
+
     // Check if we have a direct dependency.
     let directly_mapped_crate_name = resolved_dependencies.0.get(crate_name);
     if let Some(directly_mapped_crate_name) = directly_mapped_crate_name {
@@ -258,25 +270,26 @@ impl CargoManifest {
   ) -> Result<syn::Path, TryResolveCratePathError> {
     info!("Trying to get the path for: {}", crate_name);
 
-    let ret = Self::try_resolve_crate_path_for_dependency_map(
-      crate_name,
-      known_re_exporting_crates,
-      &self.resolved_dependencies,
-    )
-    .or_else(|_| {
-      Self::try_resolve_crate_path_for_dependency_map(
+    let ret = self
+      .try_resolve_crate_path_for_dependency_map(
         crate_name,
         known_re_exporting_crates,
-        &self.resolved_dependencies_dev,
+        &self.resolved_dependencies,
       )
-    })
-    .or_else(|_| {
-      Self::try_resolve_crate_path_for_dependency_map(
-        crate_name,
-        known_re_exporting_crates,
-        &self.resolved_dependencies_build,
-      )
-    });
+      .or_else(|_| {
+        self.try_resolve_crate_path_for_dependency_map(
+          crate_name,
+          known_re_exporting_crates,
+          &self.resolved_dependencies_dev,
+        )
+      })
+      .or_else(|_| {
+        self.try_resolve_crate_path_for_dependency_map(
+          crate_name,
+          known_re_exporting_crates,
+          &self.resolved_dependencies_build,
+        )
+      });
 
     info!(
       "Computed path: {:?} for {}",

@@ -4,3 +4,7 @@ edition = "2024"
 
 [dependencies]
 trait-cast-renamed = { path = "../../", package = "trait-cast" }
+
+[features]
+downcast_unchecked = []
+min_specialization = []
