@@ -416,14 +416,14 @@ dependencies = [
 
 [[package]]
 name = "trait-cast"
-version = "0.3.2"
+version = "0.3.3"
 dependencies = [
  "trait-cast-macros",
 ]
 
 [[package]]
 name = "trait-cast-macros"
-version = "0.3.2"
+version = "0.3.3"
 dependencies = [
  "proc-macro2",
  "quote",

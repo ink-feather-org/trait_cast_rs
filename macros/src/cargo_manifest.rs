@@ -3,7 +3,7 @@ use thiserror::Error;
 use toml_edit::{DocumentMut, Item};
 use tracing::{info, trace};
 
-pub fn pretty_format_syn_path(path: syn::Path) -> String {
+pub fn pretty_format_syn_path(path: &syn::Path) -> String {
   let mut path_str = String::new();
   let has_leading_colon = path.leading_colon.is_some();
   if has_leading_colon {
@@ -34,6 +34,10 @@ pub enum TryResolveCratePathError {
   AmbiguousDependency(String),
   #[error("Could not find crate path for {0}.")]
   CratePathNotFound(String),
+  #[error(
+    "All known re-exporting crates failed to resolve crate path for {0} with the following errors: {1:?}"
+  )]
+  AllReExportingCrateFailedToResolve(String, Vec<TryResolveCratePathError>),
 }
 
 /// The key is the crate name.
@@ -83,7 +87,7 @@ fn resolve_dependencies(
       dependency_crate_name.to_string(),
       Ok(dependency_key.to_string()),
     );
-    if let Err(_) = insert_result {
+    if insert_result.is_err() {
       // If the crate name is occupied.
       // We have an ambiguous dependency whose path can't be resolved.
       resolved_dependencies.0.insert(
@@ -107,12 +111,11 @@ impl CargoManifest {
         .map(PathBuf::from)
         .map(|mut path| {
           path.push("Cargo.toml");
-          if !path.exists() {
-            panic!(
-              "No Cargo manifest found for crate. Expected: {}",
-              path.display()
-            );
-          }
+          assert!(
+            path.exists(),
+            "Cargo.toml does not exist at: {}",
+            path.display()
+          );
           path
         })
         .expect("CARGO_MANIFEST_DIR is not defined.");
@@ -192,6 +195,10 @@ impl CargoManifest {
   /// ```
   ///
   /// The function would return `Some("renamed-crate-name")` for the `Item` above.
+  ///
+  /// # Errors
+  ///
+  /// If the crate name is ambiguous, an error is returned.
   fn try_resolve_crate_path_for_dependency_map(
     &self,
     crate_name: &str,
@@ -206,18 +213,14 @@ impl CargoManifest {
     // Check if we have a direct dependency.
     let directly_mapped_crate_name = resolved_dependencies.0.get(crate_name);
     if let Some(directly_mapped_crate_name) = directly_mapped_crate_name {
-      let directly_mapped_crate_name = match directly_mapped_crate_name {
-        Ok(crate_name) => crate_name,
-        Err(err) => {
-          return Err(err.clone());
-        },
-      };
+      let directly_mapped_crate_name = directly_mapped_crate_name.as_ref().map_err(Clone::clone)?;
 
       // We have a direct dependency.
       trace!("Found direct dependency: {}", directly_mapped_crate_name);
       return Ok(crate_name_to_path(directly_mapped_crate_name));
     }
 
+    let mut errors = Vec::new();
     for known_re_exporting_crate in known_re_exporting_crates {
       // Check if we have a known re-exporting crate.
       let indirect_mapped_exporting_crate_name = resolved_dependencies
@@ -227,7 +230,8 @@ impl CargoManifest {
         let indirect_mapped_exporting_crate_name = match indirect_mapped_exporting_crate_name {
           Ok(crate_name) => crate_name,
           Err(err) => {
-            return Err(err.clone()); // TODO: collect all errors
+            errors.push(err.clone());
+            continue;
           },
         };
 
@@ -247,6 +251,15 @@ impl CargoManifest {
       }
     }
 
+    if !errors.is_empty() {
+      return Err(
+        TryResolveCratePathError::AllReExportingCrateFailedToResolve(
+          crate_name.to_string(),
+          errors,
+        ),
+      );
+    }
+
     Err(TryResolveCratePathError::CratePathNotFound(
       crate_name.to_string(),
     ))
@@ -255,14 +268,19 @@ impl CargoManifest {
   /// Attempt to retrieve the absolute module path of a crate named [possible_crate_names](str) as an absolute [`syn::Path`].
   /// Remapped crate names are also supported.
   ///
-  ///  # Arguments
+  /// # Arguments
   ///
   /// * `crate_name` - The name of the crate to get the path for.
   ///
   /// * `known_re_exporting_crates` - A list of known crates that re-export the proc macro.
-  /// This is useful for monorepos like bevy where the user typically only depends on the main bevy crate but uses
-  /// proc macros from subcrates like `bevy_ecs`.
-  /// If a direct dependency exists, it is preferred over a re-exporting crate.
+  ///   This is useful for monorepos like bevy where the user typically only depends on the main bevy crate but uses proc macros from subcrates like `bevy_ecs`.
+  ///   If a direct dependency exists, it is preferred over a re-exporting crate.
+  ///
+  /// # Errors
+  ///
+  /// * If the crate name is ambiguous, an error is returned.
+  /// * If the crate path could not be found, an error is returned.
+  /// * If all known re-exporting crates failed to resolve the crate path, an error is returned.
   pub fn try_resolve_crate_path(
     &self,
     crate_name: &str,
@@ -293,7 +311,7 @@ impl CargoManifest {
 
     info!(
       "Computed path: {:?} for {}",
-      ret.clone().map(pretty_format_syn_path),
+      ret.as_ref().map(pretty_format_syn_path),
       crate_name
     );
     ret
@@ -306,7 +324,7 @@ impl CargoManifest {
     known_re_exporting_crates: &[&KnownReExportingCrate<'_>],
   ) -> syn::Path {
     self
-      .try_resolve_crate_path(crate_name, &known_re_exporting_crates)
+      .try_resolve_crate_path(crate_name, known_re_exporting_crates)
       .unwrap_or_else(|_| crate_name_to_path(crate_name))
   }
 }

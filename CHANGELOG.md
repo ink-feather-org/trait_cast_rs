@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2024-12-18
+
+- Support remapping the `trait-cast` dependency in most cases when using the proc macro.
+
 ## [0.3.2] - 2024-12-16
 
 - Support older nightly versions because the one that build the docs is currently frozen.
@@ -51,7 +55,8 @@ Updated dependencies.
 
 Initial release.
 
-[Unreleased]: https://github.com/ink-feather-org/trait-cast-rs/compare/v0.3.2...HEAD
+[Unreleased]: https://github.com/ink-feather-org/trait-cast-rs/compare/v0.3.3...HEAD
+[0.3.3]: https://github.com/ink-feather-org/trait-cast-rs/compare/v0.3.2...v0.3.3
 [0.3.2]: https://github.com/ink-feather-org/trait-cast-rs/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/ink-feather-org/trait-cast-rs/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/ink-feather-org/trait-cast-rs/compare/v0.2.4...v0.3.0
