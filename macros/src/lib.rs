@@ -3,6 +3,7 @@
 //! See `make_trait_castable` for more details.
 #![feature(map_try_insert)]
 
+use cargo_manifest_proc_macros::CargoManifest;
 use proc_macro::TokenStream as TokenStream1;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
@@ -13,8 +14,6 @@ use syn::{
   punctuated::Punctuated,
 };
 use tracing_proc_macros_ink::proc_macro_logger_default_setup;
-
-mod cargo_manifest;
 
 /// Parses a list of `TypePath`s separated by commas.
 struct TraitCastTargets {
@@ -72,7 +71,7 @@ impl quote::ToTokens for TraitCastTargets {
 pub fn make_trait_castable(args: TokenStream1, input: TokenStream1) -> TokenStream1 {
   proc_macro_logger_default_setup();
 
-  let cargo_manifest = cargo_manifest::CargoManifest::shared();
+  let cargo_manifest = CargoManifest::shared();
   let crate_path = cargo_manifest.resolve_crate_path("trait-cast", &[]);
 
   // Convert the input to a TokenStream2

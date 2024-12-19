@@ -1,6 +1,6 @@
 [package]
 name = "trait-cast-macros"
-version = "0.3.3"
+version = "0.3.4"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Proc-macro implementation for the 'trait-cast' crate."
@@ -15,16 +15,17 @@ proc-macro = true
 [dependencies]
 proc-macro2 = { version = "1.0", features = ["nightly"] }
 syn = { version = "2.0", default-features = false, features = [
-  "full",
+  "derive",
   "parsing",
   "printing",
   "proc-macro",
 ] }
-quote = "1.0"
-tracing = "0.1"
+quote = { version = "1.0", default-features = false }
+tracing = { version = "0.1", default-features = false }
 tracing-proc-macros-ink = "0.1"
 toml_edit = { version = "0.22", default-features = false, features = ["parse"] }
-thiserror = "2.0"
+thiserror = { version = "2.0", default-features = false }
+cargo-manifest-proc-macros = "0.0.1"
 
 [lints]
 workspace = true

@@ -6,7 +6,7 @@ newline_style = "Unix"
 # The options below are unstable
 unstable_features = true
 imports_granularity = "Crate"
-normalize_comments = true
+normalize_comments = false
 
 # these options seem poorly implemented and cause churn, so, try to avoid them
 # wrap_comments = true
