@@ -13,9 +13,9 @@ dependencies = [
 
 [[package]]
 name = "cargo-manifest-proc-macros"
-version = "0.0.1"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e870a6340e680602c28d5cf4832954c070f2a87cc05b9fd6f5cba9e0e9ec15b2"
+checksum = "7ad45b6a088a04f94cd85cbb2364f478b0a851aef8222eda0971e4cfacedb067"
 dependencies = [
  "syn",
  "thiserror",
